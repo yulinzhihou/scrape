@@ -1,0 +1,46 @@
+<form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('World_id')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-world_id" data-rule="required" data-source="world/index" class="form-control selectpage" name="row[world_id]" type="text" value="{$row.world_id|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('World_pid')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-world_pid" data-rule="required" class="form-control" name="row[world_pid]" type="number" value="{$row.world_pid|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Combined_id')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-combined_id" data-rule="required" data-source="combined/index" class="form-control selectpage" name="row[combined_id]" type="text" value="{$row.combined_id|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Name')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-name" data-rule="required" class="form-control" name="row[name]" type="text" value="{$row.name|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Is_combined')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-is_combined" data-rule="required" class="form-control" name="row[is_combined]" type="number" value="{$row.is_combined|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Opentime')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-opentime" data-rule="required" class="form-control datetimepicker" data-date-format="YYYY-MM-DD HH:mm:ss" data-use-current="true" name="row[opentime]" type="text" value="{:$row.opentime?datetime($row.opentime):''}">
+        </div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-success btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>
