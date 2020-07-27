@@ -80,13 +80,19 @@ class Index extends Frontend
     public function serverCombine()
     {
         //游戏区服信息
-        $serverList = $this->serverListModel->column('name','world_id');
+        $serverList = collection($this->serverListModel->where('world_pid','>',0)->select())->toArray();
         //循环找分区名与合区信息
-
-        $serverCombineData = $this->dynamicJs->browser($this->requestUri)->find('.server-info')->texts()->all();
-        $newServeCombineData = [];
-
-
+        foreach ($serverList as $value) {
+            $serverCombineData = [
+                'id'   => null,
+                'name' => explode('游戏区服：',$this->dynamicJs->browser($this->selling.'?world_id='.$value['world_id'])
+                    ->find('.server-info')->texts()->first())[1]
+            ];
+            $this->serverCombineModel->isUpdate(false)->save($serverCombineData);
+            $this->serverListModel->isUpdate(true)
+                ->where(['id'=>$value['id']])
+                ->update(['server_combine_id' => $this->serverCombineModel->id]);
+        }
     }
 
 

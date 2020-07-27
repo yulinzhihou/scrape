@@ -34,7 +34,8 @@ class ServerListCreate extends Migrator
         $table
             ->addColumn('world_id','integer',['limit'=>10,'signed'=>false,'null'=>false,'default'=>0,'comment'=>'服务器ID'])
             ->addColumn('world_pid','integer',['limit'=>10,'signed'=>false,'null'=>false,'default'=>0,'comment'=>'父ID'])
-            ->addColumn('combined_id','integer',['limit'=>10,'signed'=>false,'null'=>false,'default'=>0,'comment'=>'合区ID'])
+            ->addColumn('server_combine_id','integer',['limit'=>10,'signed'=>false,'null'=>false,'default'=>0,
+                'comment'=>'合区ID'])
             ->addColumn('name','string',['limit'=>20,'null'=>false,'default'=>'','comment'=>'服务器名'])
             ->addColumn('is_combined','integer',['limit'=>MysqlAdapter::INT_TINY,'signed'=>false,'null'=>false,
                 'default'=>0,'comment'=>'是否合区,0=否，1=是'])
