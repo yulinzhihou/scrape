@@ -10,7 +10,7 @@ use QL\Ext\PhantomJs;
 use QL\QueryList;
 use app\admin\model\server\Serverlist as ServerListModel;
 use app\admin\model\server\Combine as ServerCombineModel;
-use think\console\output\Question;
+use app\admin\model\common\Profession as ProfessionModel;
 
 class Index extends Frontend
 {
@@ -20,6 +20,7 @@ class Index extends Frontend
     protected $layout = '';
     protected $serverListModel = null;
     protected $serverCombineModel = null;
+    protected $professionModel = null;
 
 
     //模拟请求客户端
@@ -59,6 +60,9 @@ class Index extends Frontend
         parent::_initialize();
         $this->serverListModel = new ServerListModel();
         $this->serverCombineModel = new ServerCombineModel();
+        $this->professionModel = new ProfessionModel();
+
+
         $this->GzClient = new Client();
         $this->reqRes = $this->GzClient->request($this->method, $this->requestUri, [
             'headers' => [
@@ -227,6 +231,12 @@ class Index extends Frontend
                 'key'   => $menPaiName[$key],
                 'name'  => $value
             ];
+        }
+
+        if (!$this->professionModel->find(1)) {
+            $this->professionModel->isUpdate(false)->saveAll($professionData);
+        } else {
+            dump('已经入库了！');
         }
 
     }
