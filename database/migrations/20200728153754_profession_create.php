@@ -3,7 +3,7 @@
 use think\migration\Migrator;
 use think\migration\db\Column;
 
-class ServerCombineCreate extends Migrator
+class ProfessionCreate extends Migrator
 {
     /**
      * Change Method.
@@ -28,10 +28,10 @@ class ServerCombineCreate extends Migrator
      */
     public function change()
     {
-        $table = $this->table('server_combine',['primary key'=>'id','auto_increment'=>true,'engine'=>'innodb','comment'=>'合区信息'])->addIndex('id');
+        $table = $this->table('profession',['primary key'=>'id','auto_increment'=>true,'engine'=>'innodb','comment'=>'门派'])->addIndex('id');
         $table
-            ->addColumn('name','text',['null'=>false,'comment'=>'服务器名'])
-            ->addColumn('combinetime','integer',['limit'=>10,'signed'=>false,'null'=>false,'default'=>0,'comment'=>'合区时间'])
+            ->addColumn('key','integer',['limit'=>10,'signed'=>false,'null'=>false,'default'=>0,'comment'=>'门派ID'])
+            ->addColumn('name','string',['limit'=>20,'null'=>false,'default'=>'','comment'=>'门派'])
             ->addColumn('createtime','integer',['limit'=>10,'signed'=>false,'null'=>false,'default'=>0,'comment'=>'增加时间'])
             ->addColumn('updatetime','integer',['limit'=>10,'signed'=>false,'null'=>false,'default'=>0,'comment'=>'更新时间'])
             ->addColumn('deletetime','integer',['limit'=>10,'signed'=>false,'null'=>true,'comment'=>'删除时间'])

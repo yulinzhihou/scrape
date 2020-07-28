@@ -10,6 +10,7 @@ use QL\Ext\PhantomJs;
 use QL\QueryList;
 use app\admin\model\server\Serverlist as ServerListModel;
 use app\admin\model\server\Combine as ServerCombineModel;
+use think\console\output\Question;
 
 class Index extends Frontend
 {
@@ -79,7 +80,7 @@ class Index extends Frontend
         $this->MultiCurl = QueryList::getInstance();
         $this->MultiCurl->use(CurlMulti::class);
         //or Custom function name
-        $this->MultiCurl->use(CurlMulti::class,'curlMulti');
+//        $this->MultiCurl->use(CurlMulti::class,'curlMulti');
 
     }
 
@@ -91,42 +92,18 @@ class Index extends Frontend
         //游戏区服信息
         $serverList = collection($this->serverListModel->where('world_pid','>',0)->select())->toArray();
         $worldIdToServerListId = $this->serverListModel->column('id','world_id');
-        //需要采集的链接
-//        $urlData = [];
-//        foreach ($serverList as $value) {
-//            $urlData[] = $this->selling.'?world_id='.$value['world_id'];
-//        }
-
-//        $this->MultiCurl
-//            ->rules([
-//                'title' => ['dd .server-info','text'],
-//            ])
-//            ->curlMulti($urlData)
-//            ->success(function (QueryList $ql,CurlMulti $curl,$r){
-//            $data = $ql->query()->getData();
-//            print_r($data->all());
-//            // 释放资源
-//            QueryList::destructDocuments();
-//        })->start();
 
         //循环找分区名与合区信息
         foreach ($serverList as $value) {
             //循环查找区对应的合区信息
-//            $nameStr = explode('游戏区服：',$this->dynamicJs->browser($this->selling.'?world_id='.$value['world_id'])->find('.server-info')->texts()->first())[1];
             $nameStr = trim($this->dynamicJs->browser($this->selling.'?world_id='.$value['world_id'])->find('.server-info')->texts()->first());
-//            $tmp = [];
-//            array_push($tmp,$nameStr);
-//            if (!in_array($nameStr,$tmp)) {
-                $serverCombineData = [
-                    'id'   => null,
-                    'server_list_id'    => $worldIdToServerListId[$value['world_id']],
-                    'world_id'  => $value['world_id'],
-                    'world_pid' => $value['world_pid'],
-                    'name' => $nameStr,
-                ];
-//            }
-
-
+            $serverCombineData = [
+                'id'   => null,
+                'server_list_id'    => $worldIdToServerListId[$value['world_id']],
+                'world_id'  => $value['world_id'],
+                'world_pid' => $value['world_pid'],
+                'name' => $nameStr,
+            ];
             $this->serverCombineModel->isUpdate(false)->save($serverCombineData);
             $this->serverListModel->isUpdate(true)
                 ->where(['id'=>$value['id']])
@@ -135,6 +112,54 @@ class Index extends Frontend
 
     }
 
+
+    /**
+     * 游戏区对应预售区上架角色
+     * @param QueryList $queryList
+     */
+    public function gameRoleList(QueryList $queryList)
+    {
+        $this->requestUri = $this->protectGoods;
+        $this->reqRes = $this->GzClient->request($this->method, $this->requestUri, [
+            'headers' => [
+                'User-Agent' => $this->userAgent,
+                'Accept-Encoding' => $this->accEncoding,
+            ]
+        ]);
+
+        $this->html = (string)$this->reqRes->getBody();
+        //取分页数据
+        $text = $queryList->html($this->html)->find('.ui-pagination a')->texts()->toArray();
+//        dump($text);die;
+        $url = $queryList->html($this->html)->find('.ui-pagination a')->attrs('href')->toArray();
+        //组合成一个新数组
+        $newData = array_combine($text,$url);
+        //查数组最大长度
+        if (count($newData) >= 4){
+            //表示至少有2 页，否则不会出现翻页
+            //去掉首尾
+            unset($newData['上一页']);
+            unset($newData['下一页']);
+            $maxPage = array_keys($newData);
+        } else {
+            //表示没有分页
+            $maxPage = 0;
+        }
+        //获取最大页码值
+        $maxPage = $maxPage[count($maxPage)-1];
+        dump($maxPage);
+
+        /**
+         * 原理，爬虫需要记录当前页码的生产时间和上架时间。
+         * 页码每时每分会增加，如何判断页码的不断层
+         * 账号会随着时间的，需要心跳链接进行时间核实
+         * 爬取剩余时间升序的列表，
+         * 根据角色的区服，存入对应的ID 值
+         *
+         * http://tl.cyg.changyou.com/goods/public?world_id=0&order_by=remaintime#goodsTag
+         */
+
+    }
 
 
     /**
@@ -186,11 +211,31 @@ class Index extends Frontend
     }
 
 
+    /**
+     * 门派信息入库
+     * @param QueryList $queryList
+     */
+    public function getProfession(QueryList $queryList)
+    {
+        //门派数据
+        $menPaiName = $queryList->html($this->html)->find('.group-detail-item>a[data-key="profession"]')->attrs('data-value')->toArray();
+        $menPaiNum = $queryList->html($this->html)->find('.group-detail-item>a[data-key="profession"]')->texts()->toArray();
+        $professionData = [];
+        foreach ($menPaiNum as $key => $value) {
+            $professionData[] = [
+                'id'    => null,
+                'key'   => $menPaiName[$key],
+                'name'  => $value
+            ];
+        }
+
+    }
+
+
     public function index(QueryList $queryList,JsConverter $jsConverter)
     {
         $client = new Client();
         $res = $client->request('GET', 'http://tl.cyg.changyou.com', [
-//            'query' => ['wd' => 'QueryList'],
             'headers' => [
                 'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
                 'Accept-Encoding' => 'gzip, deflate, br',
@@ -205,6 +250,7 @@ class Index extends Frontend
         $menPaiName = $queryList->html($html)->find('.group-detail-item>a[data-key="profession"]')->attrs('data-value')->toArray();
         $menPaiNum = $queryList->html($html)->find('.group-detail-item>a[data-key="profession"]')->texts()->toArray();
         $menPai = array_combine($menPaiName,$menPaiNum);
+        dump($menPai);die;
 
         //等级
         $levelNum = $queryList->html($html)->find('.group-detail-item>a[data-key="level"]')->attrs('data-value')
@@ -272,11 +318,6 @@ class Index extends Frontend
             ];
         }
 
-
-        // 0 1 2    0   3*0
-        // 3 4 5    1   3*1
-        // 6 7 8    2   3*2
-        // 9 10 11  3   3*3  3*3 +1 3*3+2
 
         dump($newRoleData);
         dump($currentListRoleData);

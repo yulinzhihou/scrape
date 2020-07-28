@@ -30,8 +30,7 @@ class ServerCombineAddFields extends Migrator
     {
         $table = $this->table('server_combine');
         $table
-            ->addColumn('server_list_id','integer',['signed'=>false,'after'=>'id','limit'=>10,'default'=>0,
-                'comment'=>'服务器ID'])
+            ->addColumn('server_list_id','integer',['signed'=>false,'after'=>'id','limit'=>10,'default'=>0,'comment'=>'服务器ID'])
             ->addColumn('world_id','integer',['limit'=>10,'signed'=>false,'null'=>false,'after'=>'server_list_id','default'=>0,'comment'=>'区ID'])
             ->addColumn('world_pid','integer',['limit'=>10,'signed'=>false,'null'=>false,'after'=>'world_id','default'=>0,'comment'=>'区父ID'])
             ->update();
