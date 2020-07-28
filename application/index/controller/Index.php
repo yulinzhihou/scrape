@@ -5,6 +5,7 @@ namespace app\index\controller;
 use app\common\controller\Frontend;
 use GuzzleHttp\Client;
 use OviDigital\JsObjectToJson\JsConverter;
+use QL\Ext\CurlMulti;
 use QL\Ext\PhantomJs;
 use QL\QueryList;
 use app\admin\model\server\Serverlist as ServerListModel;
@@ -22,6 +23,8 @@ class Index extends Frontend
 
     //模拟请求客户端
     protected $GzClient = null;
+    //CURL多纯种采集
+    protected $MultiCurl = null;
     //模拟请求的请求数据
     protected $reqRes = null;
     //请求回来的html 结构体
@@ -72,6 +75,12 @@ class Index extends Frontend
         //or Custom function name
         $this->dynamicJs->use(PhantomJs::class, '/usr/local/bin/phantomjs', 'browser');
 
+        //curl多线程采集
+        $this->MultiCurl = QueryList::getInstance();
+        $this->MultiCurl->use(CurlMulti::class);
+        //or Custom function name
+        $this->MultiCurl->use(CurlMulti::class,'curlMulti');
+
     }
 
     /**
@@ -81,18 +90,49 @@ class Index extends Frontend
     {
         //游戏区服信息
         $serverList = collection($this->serverListModel->where('world_pid','>',0)->select())->toArray();
+        $worldIdToServerListId = $this->serverListModel->column('id','world_id');
+        //需要采集的链接
+//        $urlData = [];
+//        foreach ($serverList as $value) {
+//            $urlData[] = $this->selling.'?world_id='.$value['world_id'];
+//        }
+
+//        $this->MultiCurl
+//            ->rules([
+//                'title' => ['dd .server-info','text'],
+//            ])
+//            ->curlMulti($urlData)
+//            ->success(function (QueryList $ql,CurlMulti $curl,$r){
+//            $data = $ql->query()->getData();
+//            print_r($data->all());
+//            // 释放资源
+//            QueryList::destructDocuments();
+//        })->start();
+
         //循环找分区名与合区信息
         foreach ($serverList as $value) {
-            $serverCombineData = [
-                'id'   => null,
-                'name' => explode('游戏区服：',$this->dynamicJs->browser($this->selling.'?world_id='.$value['world_id'])
-                    ->find('.server-info')->texts()->first())[1]
-            ];
+            //循环查找区对应的合区信息
+//            $nameStr = explode('游戏区服：',$this->dynamicJs->browser($this->selling.'?world_id='.$value['world_id'])->find('.server-info')->texts()->first())[1];
+            $nameStr = trim($this->dynamicJs->browser($this->selling.'?world_id='.$value['world_id'])->find('.server-info')->texts()->first());
+//            $tmp = [];
+//            array_push($tmp,$nameStr);
+//            if (!in_array($nameStr,$tmp)) {
+                $serverCombineData = [
+                    'id'   => null,
+                    'server_list_id'    => $worldIdToServerListId[$value['world_id']],
+                    'world_id'  => $value['world_id'],
+                    'world_pid' => $value['world_pid'],
+                    'name' => $nameStr,
+                ];
+//            }
+
+
             $this->serverCombineModel->isUpdate(false)->save($serverCombineData);
             $this->serverListModel->isUpdate(true)
                 ->where(['id'=>$value['id']])
                 ->update(['server_combine_id' => $this->serverCombineModel->id]);
         }
+
     }
 
 
@@ -143,7 +183,6 @@ class Index extends Frontend
     {
 
 
-        dd($data->all());
     }
 
 
