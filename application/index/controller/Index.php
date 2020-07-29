@@ -118,12 +118,21 @@ class Index extends Frontend
 
 
     /**
+     * 合区信息整理
+     */
+    public function serverCombineFix()
+    {
+
+    }
+
+    /**
      * 游戏区对应预售区上架角色
      * @param QueryList $queryList
      */
-    public function gameRoleList(QueryList $queryList)
+    public function gamePublicRoleList(QueryList $queryList)
     {
-        $this->requestUri = $this->protectGoods;
+        //查询全服公示产品
+        $this->requestUri = 'http://tl.cyg.changyou.com/goods/public?world_id=0&order_by=remaintime-desc#goodsTag';
         $this->reqRes = $this->GzClient->request($this->method, $this->requestUri, [
             'headers' => [
                 'User-Agent' => $this->userAgent,
@@ -134,7 +143,6 @@ class Index extends Frontend
         $this->html = (string)$this->reqRes->getBody();
         //取分页数据
         $text = $queryList->html($this->html)->find('.ui-pagination a')->texts()->toArray();
-//        dump($text);die;
         $url = $queryList->html($this->html)->find('.ui-pagination a')->attrs('href')->toArray();
         //组合成一个新数组
         $newData = array_combine($text,$url);
@@ -151,8 +159,6 @@ class Index extends Frontend
         }
         //获取最大页码值
         $maxPage = $maxPage[count($maxPage)-1];
-        dump($maxPage);
-
         /**
          * 原理，爬虫需要记录当前页码的生产时间和上架时间。
          * 页码每时每分会增加，如何判断页码的不断层
@@ -160,8 +166,63 @@ class Index extends Frontend
          * 爬取剩余时间升序的列表，
          * 根据角色的区服，存入对应的ID 值
          *
-         * http://tl.cyg.changyou.com/goods/public?world_id=0&order_by=remaintime#goodsTag
+         * http://tl.cyg.changyou.com/goods/public?world_id=0&order_by=remaintime-desc#goodsTag
          */
+
+        //获取当前列表页面用户数据
+        $currentListRoleData = $queryList->html($this->html)->find('.jGoodsList dt')->texts();
+        //角色详情URL
+        $currentListRoleUrl = $queryList->html($this->html)->find('.jGoodsList dt a')->attrs('href');
+        //角色修炼评分，进阶评分，装备评分
+        $currentListRoleDetail = $queryList->html($this->html)->find('dd.detail span')->texts();
+        //角色价格
+        $currentListRolePrice = $queryList->html($this->html)->find('.jGoodsList .price')->texts();
+        //角色剩余时间
+        $currentListRoleTime = $queryList->html($this->html)->find('.jGoodsList .time')->texts();
+        //分区信息 html 数据
+        $currentListRoleZone = $queryList->rules(['content' => ['.server-and-time','html']])->html($this->html)->query()->getData();
+//        $currentListRoleZone = $queryList->html($this->html)->find('.server-info');
+        //解析HTML 字符串为DOM对象，然后取出自定义属性的值
+        $htmlDom = new \DOMDocument('1.0','UTF8');
+        $htmlDom->preserveWhiteSpace = FALSE;
+        @$htmlDom->loadHTML($currentListRoleZone['content']);
+//        $span = $htmlDom->getElementsByTagName('span')->item(1);
+//        $length = $span->attributes->length;
+//        for ($i = 0; $i < $length; ++$i) {
+//            $name = $span->attributes->item(1)->nodeValue;
+//            echo $name.'<br>';
+//        }
+//        dump($currentListRoleZone['content']);die;
+
+        //分区信息ID 对照表
+        $serverListData = $this->serverListModel->column('world_pid','world_id');
+        dump($serverListData);die;
+
+        //构建当前列表用户数据结构
+        $currentListRoleDataAttr = [];
+
+        foreach ($currentListRoleData as $key => $value) {
+            $span = $htmlDom->getElementsByTagName('span')->item($key);
+            $worldId = $span->attributes->item(1)->nodeValue;
+            $currentListRoleDataAttr[] = [
+                'name'  => $currentListRoleData[$key],
+                'url'   => $currentListRoleUrl[$key],
+                'server'   => $worldId,
+                'zone'      => '',
+                'attr'  => $currentListRoleDetail[$key*3].' | ' . $currentListRoleDetail[$key*3+1] . ' | ' .
+                    $currentListRoleDetail[$key*3+2],
+                'price' => substr(trim($currentListRolePrice[$key]),3),
+                'rest_time' =>$currentListRoleTime[$key],
+            ];
+        }
+
+
+//        dump($currentListRoleData);
+//        dump($currentListRoleUrl);
+//        dump($currentListRoleDetail);
+//        dump($currentListRolePrice);
+//        dump($currentListRoleZone['content']);
+        dump($currentListRoleDataAttr);
 
     }
 
@@ -204,6 +265,7 @@ class Index extends Frontend
         //$this->serverListModel->isUpdate(false)->saveAll($newServerData);
 
     }
+
 
     /**
      * 动态获取页面
@@ -257,34 +319,34 @@ class Index extends Frontend
 
 
         //门派数据
-        $menPaiName = $queryList->html($html)->find('.group-detail-item>a[data-key="profession"]')->attrs('data-value')->toArray();
-        $menPaiNum = $queryList->html($html)->find('.group-detail-item>a[data-key="profession"]')->texts()->toArray();
-        $menPai = array_combine($menPaiName,$menPaiNum);
-        dump($menPai);die;
+//        $menPaiName = $queryList->html($html)->find('.group-detail-item>a[data-key="profession"]')->attrs('data-value')->toArray();
+//        $menPaiNum = $queryList->html($html)->find('.group-detail-item>a[data-key="profession"]')->texts()->toArray();
+//        $menPai = array_combine($menPaiName,$menPaiNum);
+//        dump($menPai);die;
 
-        //等级
-        $levelNum = $queryList->html($html)->find('.group-detail-item>a[data-key="level"]')->attrs('data-value')
-            ->toArray();
-        $levelName = $queryList->html($html)->find('.group-detail-item>a[data-key="level"]')->attrs('data-value')
-            ->toArray();
-        $level = array_combine($levelNum,$levelName);
+        //等级范围
+//        $levelNum = $queryList->html($html)->find('.group-detail-item>a[data-key="level"]')->attrs('data-value')
+//            ->toArray();
+//        $levelName = $queryList->html($html)->find('.group-detail-item>a[data-key="level"]')->attrs('data-value')
+//            ->toArray();
+//        $level = array_combine($levelNum,$levelName);
 
         //取分页数据
-        $text = $queryList->html($html)->find('.ui-pagination a')->texts()->toArray();
-        $url = $queryList->html($html)->find('.ui-pagination a')->attrs('href')->toArray();
-        //组合成一个新数组
-        $newData = array_combine($text,$url);
-        //查数组最大长度
-        if (count($newData) >= 4){
-            //表示至少有2 页，否则不会出现翻页
-            //去掉首尾
-            unset($newData['上一页']);
-            unset($newData['下一页']);
-            $maxPage = array_keys($newData);
-        } else {
-            //表示没有分页
-            $maxPage = 0;
-        }
+//        $text = $queryList->html($html)->find('.ui-pagination a')->texts()->toArray();
+//        $url = $queryList->html($html)->find('.ui-pagination a')->attrs('href')->toArray();
+//        //组合成一个新数组
+//        $newData = array_combine($text,$url);
+//        //查数组最大长度
+//        if (count($newData) >= 4){
+//            //表示至少有2 页，否则不会出现翻页
+//            //去掉首尾
+//            unset($newData['上一页']);
+//            unset($newData['下一页']);
+//            $maxPage = array_keys($newData);
+//        } else {
+//            //表示没有分页
+//            $maxPage = 0;
+//        }
 //        dump($maxPage);die;
 
 
