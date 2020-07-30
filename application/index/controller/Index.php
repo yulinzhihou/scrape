@@ -101,17 +101,27 @@ class Index extends Frontend
         foreach ($serverList as $value) {
             //循环查找区对应的合区信息
             $nameStr = trim($this->dynamicJs->browser($this->selling.'?world_id='.$value['world_id'])->find('.server-info')->texts()->first());
-            $serverCombineData = [
-                'id'   => null,
-                'server_list_id'    => $worldIdToServerListId[$value['world_id']],
-                'world_id'  => $value['world_id'],
-                'world_pid' => $value['world_pid'],
-                'name' => $nameStr,
-            ];
-            $this->serverCombineModel->isUpdate(false)->save($serverCombineData);
-            $this->serverListModel->isUpdate(true)
-                ->where(['id'=>$value['id']])
-                ->update(['server_combine_id' => $this->serverCombineModel->id]);
+            $isExitsName = $this->serverCombineModel->where(['name'=>$nameStr])->find();
+            if (!$isExitsName) {
+                //表示合区信息不存在，需要新写入。
+                $serverCombineData = [
+                    'id'   => null,
+                    'server_list_id'    => $worldIdToServerListId[$value['world_id']],
+                    'world_id'  => $value['world_id'],
+                    'world_pid' => $value['world_pid'],
+                    'name' => $nameStr,
+                ];
+                $this->serverCombineModel->isUpdate(false)->save($serverCombineData);
+                $this->serverListModel->isUpdate(true)
+                    ->where(['id'=>$value['id']])
+                    ->update(['server_combine_id' => $this->serverCombineModel->id]);
+            } else {
+                //表示合区信息已经存在。
+                $this->serverListModel->isUpdate(true)
+                    ->where(['id'=>$value['id']])
+                    ->update(['server_combine_id' => $isExitsName['id']]);
+            }
+
         }
 
     }
@@ -122,6 +132,13 @@ class Index extends Frontend
      */
     public function serverCombineFix()
     {
+        $originServerCombineData = $this->serverCombineModel->column('name','id');
+//        $newServerCombineData = [];
+        $arr = array_unique($originServerCombineData);
+        dump($arr);die;
+//        foreach ($originServerCombineData as $key => $value) {
+//
+//        }
 
     }
 
