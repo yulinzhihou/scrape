@@ -11,6 +11,7 @@ use QL\QueryList;
 use app\admin\model\server\Serverlist as ServerListModel;
 use app\admin\model\server\Combine as ServerCombineModel;
 use app\admin\model\common\Profession as ProfessionModel;
+use app\admin\model\goods\Rolepublic as RolePublicModel;
 
 class Index extends Frontend
 {
@@ -21,6 +22,7 @@ class Index extends Frontend
     protected $serverListModel = null;
     protected $serverCombineModel = null;
     protected $professionModel = null;
+    protected $rolePublicModel = null;
 
 
     //模拟请求客户端
@@ -61,7 +63,7 @@ class Index extends Frontend
         $this->serverListModel = new ServerListModel();
         $this->serverCombineModel = new ServerCombineModel();
         $this->professionModel = new ProfessionModel();
-
+        $this->rolePublicModel = new RolePublicModel();
 
         $this->GzClient = new Client();
         $this->reqRes = $this->GzClient->request($this->method, $this->requestUri, [
@@ -101,7 +103,9 @@ class Index extends Frontend
         foreach ($serverList as $value) {
             //循环查找区对应的合区信息
             $nameStr = trim($this->dynamicJs->browser($this->selling.'?world_id='.$value['world_id'])->find('.server-info')->texts()->first());
+            //爬取的数据与数据库里面的数据，有误差，如果原数据基础上增加了一个分区合区数据。那么，就需要对比了。将新数据与老数据对比。
             $isExitsName = $this->serverCombineModel->where(['name'=>$nameStr])->find();
+//            dump($isExitsName);die;
             if (!$isExitsName) {
                 //表示合区信息不存在，需要新写入。
                 $serverCombineData = [
@@ -126,20 +130,67 @@ class Index extends Frontend
 
     }
 
+    /**
+     * 处理角色数据
+     * @param $name string 角色名称  [天山 女 119级] ＂白富美ゝ
+     * @return array
+     */
+    private function getRoleParseData($name)
+    {
+        $nameTemp = ltrim($name,'\[');
+        $arr = explode(']',$nameTemp);
+        $arr[0] = explode(' ',$arr[0]);
+        $arr[1] = trim($arr[1]);
+        //解析具体数据出来
+        $professionData = $this->professionModel->column('name','id');
+        return [
+            'name'          => $arr[1],
+            'profession_id' => array_search($arr[0][0],$professionData),
+            'sex'           => $arr[0][1] == '女' ? 0 : 1,
+            'level'         => intval($arr[0][2])
+        ];
+
+    }
+
 
     /**
-     * 合区信息整理
+     * 解析当前剩余时间为时间戳，
+     * @comment 剩余时间：04天11小时56分钟
+     * @comment 剩余时间：01小时01分钟05秒
+     * @param $timeString
+     * @return float|int
      */
-    public function serverCombineFix()
+    private function parseRemainTimeToTimestamps($timeString)
     {
-        $originServerCombineData = $this->serverCombineModel->column('name','id');
-//        $newServerCombineData = [];
-        $arr = array_unique($originServerCombineData);
-        dump($arr);die;
-//        foreach ($originServerCombineData as $key => $value) {
-//
-//        }
+        //分两种格式。剩余时间：04天11小时56分钟
+        $timezoneStamps = 8*3600;
 
+        if (strrpos($timeString,'天') !== false) {
+            //表示还有几天的那种情况
+
+            $restHourMinuteSecond = explode('天',$timeString);
+            $dayTimeStamps = intval($restHourMinuteSecond[0]) * 86400;
+
+            $restMinutesSeconds = explode('小时',$restHourMinuteSecond[1]);
+            $hourTimeStamps = intval($restMinutesSeconds[0]) * 3600;
+
+            $restSeconds = explode('分钟',$restMinutesSeconds[1]);
+            $minutesTimeStamps = intval($restSeconds[0]) * 60;
+            //天的时间戳+小时+分钟+0 秒的时间戳。误差范围在1 分钟之内 、
+            return time()+$dayTimeStamps+$hourTimeStamps+$minutesTimeStamps+$timezoneStamps;
+        } else {
+            //表示不足一天的情况
+            $restHourMinuteSecond = explode('小时',$timeString);
+            $hourTimeStamps = intval($restHourMinuteSecond[0]) * 3600;
+
+            $restMinutesSeconds = explode('分钟',$restHourMinuteSecond[1]);
+            $minutesTimeStamps = intval($restMinutesSeconds[0]) * 60;
+
+            $restSeconds = explode('秒',$restMinutesSeconds[1]);
+            $secondsTimeStamps = intval($restSeconds[0]);
+            //天的时间戳+小时+分钟+0 秒的时间戳。误差范围在1 分钟之内 、
+            return time()+$hourTimeStamps+$minutesTimeStamps+$secondsTimeStamps+$timezoneStamps;
+        }
     }
 
     /**
@@ -198,22 +249,12 @@ class Index extends Frontend
         $currentListRoleTime = $queryList->html($this->html)->find('.jGoodsList .time')->texts();
         //分区信息 html 数据
         $currentListRoleZone = $queryList->rules(['content' => ['.server-and-time','html']])->html($this->html)->query()->getData();
-//        $currentListRoleZone = $queryList->html($this->html)->find('.server-info');
         //解析HTML 字符串为DOM对象，然后取出自定义属性的值
         $htmlDom = new \DOMDocument('1.0','UTF8');
         $htmlDom->preserveWhiteSpace = FALSE;
         @$htmlDom->loadHTML($currentListRoleZone['content']);
-//        $span = $htmlDom->getElementsByTagName('span')->item(1);
-//        $length = $span->attributes->length;
-//        for ($i = 0; $i < $length; ++$i) {
-//            $name = $span->attributes->item(1)->nodeValue;
-//            echo $name.'<br>';
-//        }
-//        dump($currentListRoleZone['content']);die;
-
         //分区信息ID 对照表
-        $serverListData = $this->serverListModel->column('world_pid','world_id');
-        dump($serverListData);die;
+        $serverListData = $this->serverListModel->column('world_id','id');
 
         //构建当前列表用户数据结构
         $currentListRoleDataAttr = [];
@@ -221,25 +262,33 @@ class Index extends Frontend
         foreach ($currentListRoleData as $key => $value) {
             $span = $htmlDom->getElementsByTagName('span')->item($key);
             $worldId = $span->attributes->item(1)->nodeValue;
+            $roleInfo = $this->getRoleParseData($currentListRoleData[$key]);
             $currentListRoleDataAttr[] = [
-                'name'  => $currentListRoleData[$key],
+                'server_list_id'    => array_search($worldId,$serverListData),
+                'server_combine_id' => $this->serverListModel->where('world_id',$worldId)->find()['server_combine_id'],
+                'name'  => $roleInfo['name'],
+                'sex'   => $roleInfo['sex'],
+                'level' => $roleInfo['level'],
                 'url'   => $currentListRoleUrl[$key],
-                'server'   => $worldId,
-                'zone'      => '',
-                'attr'  => $currentListRoleDetail[$key*3].' | ' . $currentListRoleDetail[$key*3+1] . ' | ' .
-                    $currentListRoleDetail[$key*3+2],
-                'price' => substr(trim($currentListRolePrice[$key]),3),
-                'rest_time' =>$currentListRoleTime[$key],
+                'equip_point'   => explode('装备评分：',$currentListRoleDetail[$key*3])[1],
+                'practice_point'=> explode('修炼评分：',$currentListRoleDetail[$key*3+1])[1],
+                'advance_point' => explode('进阶评分：',$currentListRoleDetail[$key*3+2])[1],
+                'profession_id' => $roleInfo['profession_id'],
+                'is_public'     => 1,
+                'price'         => substr(trim($currentListRolePrice[$key]),3),
+                'remaintime'    => $this->parseRemainTimeToTimestamps(explode('剩余时间：',$currentListRoleTime[$key])[1]),
             ];
         }
 
+//        dump($currentListRoleDataAttr);die;
+        $this->rolePublicModel->isUpdate(false)->saveAll($currentListRoleDataAttr);
 
 //        dump($currentListRoleData);
 //        dump($currentListRoleUrl);
 //        dump($currentListRoleDetail);
 //        dump($currentListRolePrice);
 //        dump($currentListRoleZone['content']);
-        dump($currentListRoleDataAttr);
+//        dump($currentListRoleDataAttr);
 
     }
 
@@ -256,30 +305,53 @@ class Index extends Frontend
         $script = explode(';',trim(explode('=',$script)[1]))[0];
         $json = $jsConverter->convertToJson($script);
         $server = json_decode($json,true);
+        $serverList = $this->serverListModel->column('name','id');
         //构建数据格式
         $newWorldData = [];//大区数据
         $newServerData = [];//服务器数据
         foreach ($server as $value) {
-            if (is_array($value)) {
-                $newWorldData[] = [
-                    'world_id'  =>  $value['id'],
-                    'name'      =>  $value['name'],
-                    'world_pid' =>  0,
-                ];
-            }
-            foreach ($value['server'] as $k1 => $v1) {
-                $newServerData[] = [
-                    'world_id'  =>  $v1['id'],
-                    'name'      =>  $v1['name'],
-                    'world_pid' =>  $value['id'],
-                ];
+            if (!empty($serverList) && array_search($value['name'],$serverList) == false) {
+                //表示存在老数据，需要判断
+                if (is_array($value)) {
+                    $newWorldData[] = [
+                        'world_id'  =>  $value['id'],
+                        'name'      =>  $value['name'],
+                        'world_pid' =>  0,
+                        'server_combine_id' => 0,
+                    ];
+                }
+                foreach ($value['server'] as $k1 => $v1) {
+                    $newServerData[] = [
+                        'world_id'  =>  $v1['id'],
+                        'name'      =>  $v1['name'],
+                        'world_pid' =>  $value['id'],
+                        'server_combine_id' => $this->getServerCombineId($v1['name'])
+                    ];
 
+                }
+            } else {
+                //全新爬取
+                if (is_array($value)) {
+                    $newWorldData[] = [
+                        'world_id'  =>  $value['id'],
+                        'name'      =>  $value['name'],
+                        'world_pid' =>  0,
+                    ];
+                }
+                foreach ($value['server'] as $k1 => $v1) {
+                    $newServerData[] = [
+                        'world_id'  =>  $v1['id'],
+                        'name'      =>  $v1['name'],
+                        'world_pid' =>  $value['id'],
+                    ];
+
+                }
             }
+
         }
 
         //入库
         //$this->serverListModel->isUpdate(false)->saveAll($newWorldData);
-        //$this->serverListModel->isUpdate(false)->saveAll($newServerData);
 
     }
 
@@ -444,5 +516,24 @@ class Index extends Frontend
     }
 
 
+    /**
+     * 通过爬取的数据找到合区ID
+     * @param $data
+     * @return int|string
+     */
+    private function getServerCombineId($data)
+    {
+        $serverCombineData = $this->serverCombineModel->column('name','id');
+        foreach ($serverCombineData as $key => $serverCombineDatum) {
+            if (strrpos($data,$serverCombineDatum['name']) !== false) {
+                //表示存在合区编号
+                return $key;
+            } else {
+                return $key+1;
+            }
+        }
+
+        return 0;
+    }
 
 }
