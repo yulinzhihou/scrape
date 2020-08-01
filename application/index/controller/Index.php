@@ -35,6 +35,8 @@ class Index extends Frontend
     protected $html = null;
     //请求的uri
     protected $requestUri = 'http://tl.cyg.changyou.com';
+    //图标请求接口
+    protected $imgCygApiUrl = 'http://image.cyg.changyou.com/tl';
     //请求方式
     protected $method = 'GET';
     //请求代理设置
@@ -264,6 +266,7 @@ class Index extends Frontend
             $worldId = $span->attributes->item(1)->nodeValue;
             $roleInfo = $this->getRoleParseData($currentListRoleData[$key]);
             $currentListRoleDataAttr[] = [
+                'serial_num'        => trim(explode('serial_num=',$currentListRoleUrl[$key])[1]),
                 'server_list_id'    => array_search($worldId,$serverListData),
                 'server_combine_id' => $this->serverListModel->where('world_id',$worldId)->find()['server_combine_id'],
                 'name'  => $roleInfo['name'],
@@ -280,18 +283,45 @@ class Index extends Frontend
             ];
         }
 
-//        dump($currentListRoleDataAttr);die;
         $this->rolePublicModel->isUpdate(false)->saveAll($currentListRoleDataAttr);
-
-//        dump($currentListRoleData);
-//        dump($currentListRoleUrl);
-//        dump($currentListRoleDetail);
-//        dump($currentListRolePrice);
-//        dump($currentListRoleZone['content']);
-//        dump($currentListRoleDataAttr);
 
     }
 
+
+    /**
+     * 预售区角色详情页
+     * @param QueryList $queryList
+     * @param JsConverter $jsConverter
+     */
+    public function gamePublicRoleDetail(QueryList $queryList,JsConverter $jsConverter)
+    {
+        $roleListData = $this->rolePublicModel->column('url','id');
+
+        foreach ($roleListData as $roleListDatum) {
+            //查询全服公示产品
+//            $this->requestUri = $roleListDatum;
+            $this->requestUri = 'http://tl.cyg.changyou.com/goods/char_detail?serial_num=20200728856352762';
+            $this->reqRes = $this->GzClient->request($this->method, $this->requestUri, [
+                'headers' => [
+                    'User-Agent' => $this->userAgent,
+                    'Accept-Encoding' => $this->accEncoding,
+                ]
+            ]);
+
+            $this->html = (string)$this->reqRes->getBody();
+            //爬取角色页数据
+            $roleInfoData = $queryList->html($this->html)->find('#tlTRLevelTpl')->next()->texts();
+            $roleInfoData = explode(';',trim(explode('=',$roleInfoData[0])[2]));
+            $roleInfoDataJson = $jsConverter->convertToJson(trim($roleInfoData[0]));
+            //将数据全部解析出来
+            $server = json_decode($roleInfoDataJson,true);
+            //构建数据库数据结构
+
+            dump($server);
+            die;
+        }
+
+    }
 
     /**
      * 爬取服务器大区和服务器列表
