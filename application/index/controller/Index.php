@@ -319,7 +319,9 @@ class Index extends Frontend
             $roleInfoDataArr = json_decode($roleInfoDataJson,true);
             //构建数据库数据结构
             $roleBaseInfo = $this->roleDetailGeneralData($roleInfoDataArr,$roleListDatum,0);
-            dump($roleBaseInfo);
+            //前 19 件装备信息
+            $nineteenEquips = $this->roleDetailSixteenEquips($roleInfoDataArr);
+            dump($nineteenEquips);
             die;
         }
 
@@ -671,6 +673,39 @@ class Index extends Frontend
             "status"            =>  $roleInfoDataArr['maxHp'],
             "remaintime"        =>  $roleInfoDataArr['maxHp'],
         ];
+    }
+
+    /**
+     * 获取角色页面前16件装备的数据
+     * @param $roleInfoDataArr  array  角色数据
+     * @return mixed
+     */
+    private function roleDetailSixteenEquips($roleInfoDataArr)
+    {
+        $equips = $roleInfoDataArr['items']['equip'];
+        foreach ($equips as $key => &$value) {
+            if ($key <= 18) {
+                $arr = explode('_',$value['icon']);
+                if (count($arr) == 2) {
+                    $value['icon'] = ['image'=>$arr[0].'.jpg','index'=>$arr[1]];
+                } else {
+                    $value['icon'] = ['image'=>$arr[0].'_'.$arr[1].'.jpg','index'=>$arr[2]];
+                }
+
+                foreach ($value['gemAttr'] as $k1 => &$v1) {
+                    $arr1 = explode('_',$v1['icon']);
+                    if (count($arr1) == 2) {
+                        $v1['icon'] = ['image'=>$arr1[0].'.jpg','index'=>$arr1[1]];
+                    } else {
+                        $v1['icon'] = ['image'=>$arr1[0].'_'.$arr1[1].'.jpg','index'=>$arr1[2]];
+                    }
+                }
+
+            } else {
+                unset($equips[$key]);
+            }
+        }
+        return $equips;
     }
 
 }
