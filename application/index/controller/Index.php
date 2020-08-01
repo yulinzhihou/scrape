@@ -321,6 +321,8 @@ class Index extends Frontend
             $roleBaseInfo = $this->roleDetailGeneralData($roleInfoDataArr,$roleListDatum,0);
             //前 19 件装备信息
             $nineteenEquips = $this->roleDetailSixteenEquips($roleInfoDataArr);
+            //评分称号
+            $roleTitleScoreData = $this->roleDetailTitleScore($roleInfoDataArr);
             dump($nineteenEquips);
             die;
         }
@@ -706,6 +708,24 @@ class Index extends Frontend
             }
         }
         return $equips;
+    }
+
+
+    /**
+     * 基础信息-评分称号
+     * @param $roleInfoDataArr
+     * @return array
+     */
+    private function roleDetailTitleScore($roleInfoDataArr)
+    {
+        return [
+            'equip_score'   => '',
+            'equip_score_hh'   => '',
+            'title'   => '',
+            'gem_xiu_lian_score'   => '',
+            'gem_jin_jie_score'    => '',
+
+        ];
     }
 
 }
