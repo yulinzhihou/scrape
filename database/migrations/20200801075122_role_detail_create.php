@@ -88,7 +88,6 @@ class RoleDetailCreate extends Migrator
             ->addColumn('gem_num_7','integer',['signed'=>false,'limit'=>MysqlAdapter::INT_TINY,'default'=>0,'comment'=>'7级宝石数量'])
             ->addColumn('gem_num_8','integer',['signed'=>false,'limit'=>MysqlAdapter::INT_TINY,'default'=>0,'comment'=>'8级宝石数量'])
             ->addColumn('gem_num_9','integer',['signed'=>false,'limit'=>MysqlAdapter::INT_TINY,'default'=>0,'comment'=>'9级宝石数量'])
-            ->addColumn('gem_num_9','integer',['signed'=>false,'limit'=>MysqlAdapter::INT_TINY,'default'=>0,'comment'=>'9级宝石数量'])
             ->addColumn('mining','integer',['signed'=>false,'limit'=>MysqlAdapter::INT_TINY,'default'=>0,'comment'=>'采矿'])
             ->addColumn('plant','integer',['signed'=>false,'limit'=>MysqlAdapter::INT_TINY,'default'=>0,'comment'=>'种植'])
             ->addColumn('drug','integer',['signed'=>false,'limit'=>MysqlAdapter::INT_TINY,'default'=>0,'comment'=>'采药'])

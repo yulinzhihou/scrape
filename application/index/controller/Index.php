@@ -295,8 +295,10 @@ class Index extends Frontend
      */
     public function gamePublicRoleDetail(QueryList $queryList,JsConverter $jsConverter)
     {
-        $roleListData = $this->rolePublicModel->column('url','id');
+        $roleListData = $this->rolePublicModel->column('url,price,server_list_id,server_combine_id','id');
 
+//        dump($professionData);
+//        dump($roleListData);die;
         foreach ($roleListData as $roleListDatum) {
             //查询全服公示产品
 //            $this->requestUri = $roleListDatum;
@@ -314,10 +316,10 @@ class Index extends Frontend
             $roleInfoData = explode(';',trim(explode('=',$roleInfoData[0])[2]));
             $roleInfoDataJson = $jsConverter->convertToJson(trim($roleInfoData[0]));
             //将数据全部解析出来
-            $server = json_decode($roleInfoDataJson,true);
+            $roleInfoDataArr = json_decode($roleInfoDataJson,true);
             //构建数据库数据结构
-
-            dump($server);
+            $roleBaseInfo = $this->roleDetailGeneralData($roleInfoDataArr,$roleListDatum,0);
+            dump($roleBaseInfo);
             die;
         }
 
@@ -423,6 +425,11 @@ class Index extends Frontend
     }
 
 
+    /**
+     * demo 方法
+     * @param QueryList $queryList
+     * @param JsConverter $jsConverter
+     */
     public function index(QueryList $queryList,JsConverter $jsConverter)
     {
         $client = new Client();
@@ -564,6 +571,106 @@ class Index extends Frontend
         }
 
         return 0;
+    }
+
+    /**
+     * 处理角色详情页角色基础数据
+     * @param $roleInfoDataArr  array   角色数据
+     * @param $roleListDatum    array   公示区角色列表
+     * @param $roleSellingId    integer 交易区ID
+     * @return string[]
+     */
+    private function roleDetailGeneralData($roleInfoDataArr,$roleListDatum,$roleSellingId)
+    {
+        $serialNum = explode('serial_num=',$roleListDatum['url'])[1];
+
+        return [
+            "role_public_id"    =>  $roleListDatum['id'],
+            "role_selling_id"   =>  $roleSellingId,
+            "serial_num"        =>  $serialNum,
+            "name"              =>  $roleInfoDataArr['charName'],
+            "level"             =>  $roleInfoDataArr['level'],
+            "sex"               =>  $roleInfoDataArr['sex'] == 0 ? '女' : '男',
+            "price"             =>  $roleListDatum['price'],
+            "profession_id"     =>  $roleInfoDataArr['menpai'],
+            "max_hp"            =>  $roleInfoDataArr['maxHp'],
+            "max_mp"            =>  $roleInfoDataArr['maxMp'],
+            "str"               =>  $roleInfoDataArr['str'],
+            "spr"               =>  $roleInfoDataArr['spr'],
+            "con"               =>  $roleInfoDataArr['con'],
+            "com"               =>  $roleInfoDataArr['com'],
+            "dex"               =>  $roleInfoDataArr['dex'],
+            "qian_neng"         =>  $roleInfoDataArr['qianNeng'],
+            "phy_attack"        =>  $roleInfoDataArr['phyAttack'],
+            "mag_attack"        =>  $roleInfoDataArr['magAttack'],
+            "phy_def"           =>  $roleInfoDataArr['phyDef'],
+            "mag_def"           =>  $roleInfoDataArr['magDef'],
+            "hit"               =>  $roleInfoDataArr['hit'],
+            "miss"              =>  $roleInfoDataArr['miss'],
+            "critical_att"      =>  $roleInfoDataArr['criticalAtt'],
+            "critical_def"      =>  $roleInfoDataArr['criticalDef'],
+            "all_jiaozi"        =>  $roleInfoDataArr['bkBgBaseInfo']['jiaoZi'],
+            "all_gold"          =>  $roleInfoDataArr['bkBgBaseInfo']['gold'] + $roleInfoDataArr['bkBgBaseInfo']['bankGold'],
+            "all_yuanbao"       =>  $roleInfoDataArr['bkBgBaseInfo']['yuanBao'],
+            "all_bind_yuanbao"  =>  $roleInfoDataArr['bkBgBaseInfo']['bindYuanBao'],
+            "all_tongbao"       =>  $roleInfoDataArr['bkBgBaseInfo']['tongBao'],
+            "cold_att"          =>  $roleInfoDataArr['coldAtt'],
+            "cold_def"          =>  $roleInfoDataArr['coldDef'],
+            "resist_cold_def"   =>  $roleInfoDataArr['resistColdDef'],
+            "resist_cold_def_limit" =>  $roleInfoDataArr['resistColdDefLimit'],
+            "fire_att"          =>  $roleInfoDataArr['fireAtt'],
+            "fire_def"          =>  $roleInfoDataArr['fireDef'],
+            "resist_fire_def"   =>  $roleInfoDataArr['resistFireDef'],
+            "resist_fire_def_limit" =>  $roleInfoDataArr['resistFireDefLimit'],
+            "light_att"         =>  $roleInfoDataArr['lightAtt'],
+            "light_def"         =>  $roleInfoDataArr['lightDef'],
+            "resist_light_def"  =>  $roleInfoDataArr['resistLightDef'],
+            "resist_light_def_limit"    =>  $roleInfoDataArr['resistLightDefLimit'],
+            "postion_att"       =>  $roleInfoDataArr['postionAtt'],
+            "postion_def"       =>  $roleInfoDataArr['postionDef'],
+            "resist_postion_def"=>  $roleInfoDataArr['resistPostionDef'],
+            "resist_postion_def_limit"  =>  $roleInfoDataArr['resistPostionDefLimit'],
+            "xin_fa_score"      =>  $roleInfoDataArr['xinFaScore'],
+            "xiu_lian_score"    =>  $roleInfoDataArr['xiuLianScore'],
+            "upgrade_score"     =>  $roleInfoDataArr['upgradeScore'],
+            "chuan_ci_jian_mian"=>  $roleInfoDataArr['chuanCiJianMian'],
+            "chuan_ci_shang_hai"=>  $roleInfoDataArr['chuanCiShangHai'],
+            "gem_num_3"         =>  $roleInfoDataArr['gemNum3'],
+            "gem_num_4"         =>  $roleInfoDataArr['gemNum4'],
+            "gem_num_5"         =>  $roleInfoDataArr['gemNum5'],
+            "gem_num_6"         =>  $roleInfoDataArr['gemNum6'],
+            "gem_num_7"         =>  $roleInfoDataArr['gemNum7'],
+            "gem_num_8"         =>  $roleInfoDataArr['gemNum8'],
+            "gem_num_9"         =>  $roleInfoDataArr['gemNum9'],
+            "mining"            =>  $roleInfoDataArr['shengHuoSkillList'][0]['level'],
+            "plant"             =>  $roleInfoDataArr['shengHuoSkillList'][2]['level'],
+            "drug"              =>  $roleInfoDataArr['shengHuoSkillList'][1]['level'],
+            "cooking"           =>  $roleInfoDataArr['shengHuoSkillList'][3]['level'],
+            "pharmacy"          =>  $roleInfoDataArr['shengHuoSkillList'][4]['level'],
+            "fishing"           =>  $roleInfoDataArr['shengHuoSkillList'][5]['level'],
+//            "item_unbind_info"  =>  $roleInfoDataArr['maxHp'],
+//            "equip_unbind_info" =>  $roleInfoDataArr['maxHp'],
+//            "pet_appendage_info"=>  $roleInfoDataArr['maxHp'],
+//            "base_info"         =>  $roleInfoDataArr['maxHp'],
+//            "skill_info"        =>  $roleInfoDataArr['maxHp'],
+//            "book_info"         =>  $roleInfoDataArr['maxHp'],
+//            "pet_info"          =>  $roleInfoDataArr['maxHp'],
+//            "bag_item_info"     =>  $roleInfoDataArr['maxHp'],
+//            "bag_equip_info"    =>  $roleInfoDataArr['maxHp'],
+//            "bag_pet_equip_info"=>  $roleInfoDataArr['maxHp'],
+//            "bag_infants_info"  =>  $roleInfoDataArr['maxHp'],
+//            "cloth_info"        =>  $roleInfoDataArr['maxHp'],
+//            "wuhun_info"        =>  $roleInfoDataArr['maxHp'],
+//            "xiulian_info"      =>  $roleInfoDataArr['maxHp'],
+//            "zhenyuan_info"     =>  $roleInfoDataArr['maxHp'],
+//            "infants_info"      =>  $roleInfoDataArr['maxHp'],
+//            "shending_info"     =>  $roleInfoDataArr['maxHp'],
+//            "hxy_info"          =>  $roleInfoDataArr['maxHp'],
+//            "fiveElements_info" =>  $roleInfoDataArr['maxHp'],
+//            "talent_info"       =>  $roleInfoDataArr['maxHp'],
+            "status"            =>  $roleInfoDataArr['maxHp'],
+            "remaintime"        =>  $roleInfoDataArr['maxHp'],
+        ];
     }
 
 }
