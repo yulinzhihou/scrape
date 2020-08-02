@@ -12,6 +12,7 @@ use app\admin\model\server\Serverlist as ServerListModel;
 use app\admin\model\server\Combine as ServerCombineModel;
 use app\admin\model\common\Profession as ProfessionModel;
 use app\admin\model\goods\Rolepublic as RolePublicModel;
+use app\admin\model\goods\Detail as RoleDetailModel;
 
 class Index extends Frontend
 {
@@ -23,6 +24,7 @@ class Index extends Frontend
     protected $serverCombineModel = null;
     protected $professionModel = null;
     protected $rolePublicModel = null;
+    protected $roleDetailModel = null;
 
 
     //模拟请求客户端
@@ -66,6 +68,7 @@ class Index extends Frontend
         $this->serverCombineModel = new ServerCombineModel();
         $this->professionModel = new ProfessionModel();
         $this->rolePublicModel = new RolePublicModel();
+        $this->roleDetailModel = new RoleDetailModel();
 
         $this->GzClient = new Client();
         $this->reqRes = $this->GzClient->request($this->method, $this->requestUri, [
@@ -295,14 +298,11 @@ class Index extends Frontend
      */
     public function gamePublicRoleDetail(QueryList $queryList,JsConverter $jsConverter)
     {
-        $roleListData = $this->rolePublicModel->column('url,price,server_list_id,server_combine_id','id');
-
-//        dump($professionData);
-//        dump($roleListData);die;
+        $roleListData = $this->rolePublicModel->column('url,price,server_list_id,server_combine_id,remaintime','id');
         foreach ($roleListData as $roleListDatum) {
             //查询全服公示产品
-//            $this->requestUri = $roleListDatum;
-            $this->requestUri = 'http://tl.cyg.changyou.com/goods/char_detail?serial_num=20200728856352762';
+            $this->requestUri = $roleListDatum['url'];
+//            $this->requestUri = 'http://tl.cyg.changyou.com/goods/char_detail?serial_num=20200728856352762';
             $this->reqRes = $this->GzClient->request($this->method, $this->requestUri, [
                 'headers' => [
                     'User-Agent' => $this->userAgent,
@@ -317,14 +317,145 @@ class Index extends Frontend
             $roleInfoDataJson = $jsConverter->convertToJson(trim($roleInfoData[0]));
             //将数据全部解析出来
             $roleInfoDataArr = json_decode($roleInfoDataJson,true);
+//            dump($roleInfoDataArr);die;
             //构建数据库数据结构
-            $roleBaseInfo = $this->roleDetailGeneralData($roleInfoDataArr,$roleListDatum,0);
+            $roleInfo = $this->roleDetailGeneralData($roleInfoDataArr,$roleListDatum,0);
             //前 19 件装备信息
-            $nineteenEquips = $this->roleDetailSixteenEquips($roleInfoDataArr);
-            //评分称号
-            $roleTitleScoreData = $this->roleDetailTitleScore($roleInfoDataArr);
-            dump($nineteenEquips);
-            die;
+            $nineteenEquips = $this->roleDetailIconFix($roleInfoDataArr['items'],'equip','gemAttr');
+            foreach ($nineteenEquips as $key => $value) {
+                if ($key > 18) {
+                    unset($nineteenEquips[$key]);
+                }
+            }
+            //整合角色首页基本信息入库
+            $roleInfo['base_info'] = json_encode($nineteenEquips);
+            //技能页面
+            $xinFaData = $this->roleDetailIconFix($roleInfoDataArr,'xinFaList');
+            $shengHuoSkillData = $this->roleDetailIconFix($roleInfoDataArr,'shengHuoSkillList');
+            $roleInfo['skill_info'] = json_encode(['menpai'=>$xinFaData,'shenghuo'=>$shengHuoSkillData]);
+            //秘籍页面
+            $bookData = $this->roleDetailIconFix($roleInfoDataArr['miJi'],'miJiInfo','duanShi');
+            $roleInfo['book_info'] = json_encode($bookData);
+            //珍兽页面
+            $petsData = $this->roleDetailIconFix($roleInfoDataArr,'petList','petSkillList');
+            $roleInfo['pet_info'] = json_encode($petsData);
+            //仓库页面
+            $bankItemData = $this->roleDetailIconFix($roleInfoDataArr['items'],'commonItem');
+            $bankNewItemData = $specialItemInfo =  [];
+            foreach ($bankItemData as $key => $value) {
+                if ($value['isBind'] === 1) {
+                    array_push($bankNewItemData,$value);
+                } else {
+                    array_push($specialItemInfo,$value);
+                }
+            }
+            //仓库物品。
+            $roleInfo['bag_item_info'] = json_encode($bankItemData);
+            $roleInfo['special_item_info'] = json_encode($specialItemInfo);
+            //仓库装备
+            $bankEquipData = $this->roleDetailIconFix($roleInfoDataArr['items'],'equip');
+            $bankNewEquipData = $specialEquipInfo = [];
+            foreach ($bankEquipData as $key => $value) {
+                if ($value['isBind'] === 1) {
+                    array_push($bankNewEquipData,$value);
+                } else {
+                    array_push($specialEquipInfo,$value);
+                }
+            }
+            $roleInfo['bag_equip_info'] = json_encode($bankEquipData);
+            $roleInfo['special_equips_info'] = json_encode($specialEquipInfo);
+            //仓库宝宝装备
+            $bankPetsEquipData = $this->roleDetailIconFix($roleInfoDataArr['items'],'petEquip');
+            $bankNewPetsEquipData = $specialPetsEquipInfo = [];
+            foreach ($bankPetsEquipData as $key => $value) {
+                if ($value['isBind'] == 1) {
+                    array_push($bankNewPetsEquipData,$value);
+                } else {
+                    array_push($specialPetsEquipInfo,$value);
+                }
+            }
+            $roleInfo['bag_pet_equip_info'] = json_encode($bankPetsEquipData);
+            $roleInfo['special_pets_info'] = json_encode($specialPetsEquipInfo);
+            //仓库子女时装
+            $bankInfantsData = $this->roleDetailIconFix($roleInfoDataArr['items'],'card');
+            $roleInfo['bag_infants_info'] = json_encode($bankInfantsData);
+            //外观页面数据----时装，幻饰武器都属于仓库装备数据里面
+            $appearanceClothData = $appearanceWeaponData = [];
+            foreach ($bankEquipData as $bankEquipDatum) {
+                if ($bankEquipDatum['typeDesc'] == '时装') {
+                    array_push($appearanceClothData,$bankEquipDatum);
+                }
+
+                if ($bankEquipDatum['typeDesc'] == '幻饰武器') {
+                    array_push($appearanceWeaponData,$bankEquipDatum);
+                }
+            }
+            $roleInfo['cloth_info'] = json_encode(['cloth'=>$appearanceClothData,'weapon'=>$appearanceWeaponData]);
+            //武魂页面
+            if (isset($nineteenEquips[15])) {
+                $roleInfo['wuhun_info'] = json_encode($nineteenEquips[15]);
+            } else {
+                $roleInfo['wuhun_info'] = '';
+            }
+            //修炼|经脉页面数据
+            $roleXiuLianData = $this->roleDetailIconFix($roleInfoDataArr,'xiuLianList','xiuLianXiangList');
+            $roleJingMaiData = $this->roleDetailIconFix($roleInfoDataArr,'miFaList');
+//            dump($roleInfoDataArr);die;
+
+            $roleInfo['xiulian_info'] = json_encode(['xiulian'=>$roleXiuLianData,'jingmai'=>$roleJingMaiData]);
+            //真元数据页面
+            $roleZYData = $this->roleDetailIconFix($roleInfoDataArr,'zhenYuanList');
+            $roleInfo['zhenyuan_info'] = json_encode($roleZYData);
+            //子女页面数据
+//            $roleInfants = $this->roleDetailIconFix($roleInfoDataArr['infants'],0,'cardList');
+            if (isset($roleInfoDataArr['infants'][0])) {
+                $roleInfants = $roleInfoDataArr['infants'][0];
+
+                foreach ($roleInfants['cardList'] as $key => &$value) {
+                    if ($value['icon'] != '') {
+                        $arr = explode('_',$value['icon']);
+                        if (count($arr) == 2) {
+                            $value['icon'] = ['image'=>$arr[0].'.jpg','index'=>$arr[1]];
+                        } else {
+                            $value['icon'] = ['image'=>$arr[0].'_'.$arr[1].'.jpg','index'=>$arr[2]];
+                        }
+                    }
+                }
+                foreach ($roleInfants['skills'] as $key => &$value) {
+                    if ($value['iconName'] != '') {
+                        $arr = explode('_',$value['iconName']);
+                        if (count($arr) == 2) {
+                            $value['iconName'] = ['image'=>$arr[0].'.jpg','index'=>$arr[1]];
+                        } else {
+                            $value['iconName'] = ['image'=>$arr[0].'_'.$arr[1].'.jpg','index'=>$arr[2]];
+                        }
+                    }
+                }
+
+                $roleInfo['infants_info'] = json_encode($roleInfants);
+            } else {
+                $roleInfo['infants_info'] = '';
+            }
+
+            //神鼎页面数据
+            $roleInfo['shending_info'] = json_encode($roleInfoDataArr['shenDing']);
+            //侠印页面数据
+            if (isset($nineteenEquips[18])) {
+                $roleInfo['hxy_info'] = json_encode($nineteenEquips[18]);
+            } else {
+                $roleInfo['hxy_info'] = '';
+            }
+            //宝鉴页面数据
+            $roleInfo['fiveElements_info'] = json_encode($roleInfoDataArr['fiveElements']);
+            //武意页面数据
+            $roleInfo['talent_info'] = json_encode(['martialDB'=>$roleInfoDataArr['martialDB'],'talentDB'=>$roleInfoDataArr['talentDB']]);
+
+            //直接存库
+            $serialNum = explode('serial_num=',$roleListDatum['url'])[1];
+            $result = $this->roleDetailModel->where('serial_num',$serialNum)->find();
+            if (!$result) {
+                $this->roleDetailModel->isUpdate(false)->save($roleInfo);
+            }
         }
 
     }
@@ -577,6 +708,7 @@ class Index extends Frontend
         return 0;
     }
 
+
     /**
      * 处理角色详情页角色基础数据
      * @param $roleInfoDataArr  array   角色数据
@@ -589,12 +721,13 @@ class Index extends Frontend
         $serialNum = explode('serial_num=',$roleListDatum['url'])[1];
 
         return [
+            'id'                =>  null,
             "role_public_id"    =>  $roleListDatum['id'],
             "role_selling_id"   =>  $roleSellingId,
             "serial_num"        =>  $serialNum,
             "name"              =>  $roleInfoDataArr['charName'],
             "level"             =>  $roleInfoDataArr['level'],
-            "sex"               =>  $roleInfoDataArr['sex'] == 0 ? '女' : '男',
+            "sex"               =>  $roleInfoDataArr['sex'],
             "price"             =>  $roleListDatum['price'],
             "profession_id"     =>  $roleInfoDataArr['menpai'],
             "max_hp"            =>  $roleInfoDataArr['maxHp'],
@@ -652,80 +785,52 @@ class Index extends Frontend
             "cooking"           =>  $roleInfoDataArr['shengHuoSkillList'][3]['level'],
             "pharmacy"          =>  $roleInfoDataArr['shengHuoSkillList'][4]['level'],
             "fishing"           =>  $roleInfoDataArr['shengHuoSkillList'][5]['level'],
-//            "item_unbind_info"  =>  $roleInfoDataArr['maxHp'],
-//            "equip_unbind_info" =>  $roleInfoDataArr['maxHp'],
-//            "pet_appendage_info"=>  $roleInfoDataArr['maxHp'],
-//            "base_info"         =>  $roleInfoDataArr['maxHp'],
-//            "skill_info"        =>  $roleInfoDataArr['maxHp'],
-//            "book_info"         =>  $roleInfoDataArr['maxHp'],
-//            "pet_info"          =>  $roleInfoDataArr['maxHp'],
-//            "bag_item_info"     =>  $roleInfoDataArr['maxHp'],
-//            "bag_equip_info"    =>  $roleInfoDataArr['maxHp'],
-//            "bag_pet_equip_info"=>  $roleInfoDataArr['maxHp'],
-//            "bag_infants_info"  =>  $roleInfoDataArr['maxHp'],
-//            "cloth_info"        =>  $roleInfoDataArr['maxHp'],
-//            "wuhun_info"        =>  $roleInfoDataArr['maxHp'],
-//            "xiulian_info"      =>  $roleInfoDataArr['maxHp'],
-//            "zhenyuan_info"     =>  $roleInfoDataArr['maxHp'],
-//            "infants_info"      =>  $roleInfoDataArr['maxHp'],
-//            "shending_info"     =>  $roleInfoDataArr['maxHp'],
-//            "hxy_info"          =>  $roleInfoDataArr['maxHp'],
-//            "fiveElements_info" =>  $roleInfoDataArr['maxHp'],
-//            "talent_info"       =>  $roleInfoDataArr['maxHp'],
-            "status"            =>  $roleInfoDataArr['maxHp'],
-            "remaintime"        =>  $roleInfoDataArr['maxHp'],
+            'equip_score'       =>  $roleInfoDataArr['equipScore'],
+            'equip_score_hh'    =>  $roleInfoDataArr['equipScoreHH'],
+            'title'             =>  $roleInfoDataArr['title'],
+            'gem_xiu_lian_score'=>  $roleInfoDataArr['gemXiuLianScore'],
+            'gem_jin_jie_score' =>  $roleInfoDataArr['gemJinJieScore'],
+            "remaintime"        =>  $roleListDatum['remaintime'],
         ];
     }
 
+
     /**
-     * 获取角色页面前16件装备的数据
-     * @param $roleInfoDataArr  array  角色数据
-     * @return mixed
+     * 通用图标数据处理方法
+     * @param $roleInfoDataArr  array   角色数据
+     * @param $name             string  要处理的数组标识（数组键名标识）
+     * @param $nameItem         string  需要处理的数组二级标识（此数组位于 $name 数组内的一个数组键名）
+     * @return array
      */
-    private function roleDetailSixteenEquips($roleInfoDataArr)
+    private function roleDetailIconFix($roleInfoDataArr,$name,$nameItem='')
     {
-        $equips = $roleInfoDataArr['items']['equip'];
-        foreach ($equips as $key => &$value) {
-            if ($key <= 18) {
+        $tempArr = $roleInfoDataArr[$name];
+        foreach ($tempArr as $key => &$value) {
+            if ($value['icon'] != '') {
                 $arr = explode('_',$value['icon']);
                 if (count($arr) == 2) {
                     $value['icon'] = ['image'=>$arr[0].'.jpg','index'=>$arr[1]];
                 } else {
                     $value['icon'] = ['image'=>$arr[0].'_'.$arr[1].'.jpg','index'=>$arr[2]];
                 }
+            }
 
-                foreach ($value['gemAttr'] as $k1 => &$v1) {
-                    $arr1 = explode('_',$v1['icon']);
-                    if (count($arr1) == 2) {
-                        $v1['icon'] = ['image'=>$arr1[0].'.jpg','index'=>$arr1[1]];
-                    } else {
-                        $v1['icon'] = ['image'=>$arr1[0].'_'.$arr1[1].'.jpg','index'=>$arr1[2]];
+
+            if ($nameItem != '' && $name != 'infants') {
+                foreach ($value[$nameItem] as &$v1) {
+                    if ($v1['icon'] != '') {
+                        $arr1 = explode('_',$v1['icon']);
+                        if (count($arr1) == 2) {
+                            $v1['icon'] = ['image'=>$arr1[0].'.jpg','index'=>$arr1[1]];
+                        } else {
+                            $v1['icon'] = ['image'=>$arr1[0].'_'.$arr1[1].'.jpg','index'=>$arr1[2]];
+                        }
                     }
                 }
-
-            } else {
-                unset($equips[$key]);
             }
         }
-        return $equips;
-    }
 
-
-    /**
-     * 基础信息-评分称号
-     * @param $roleInfoDataArr
-     * @return array
-     */
-    private function roleDetailTitleScore($roleInfoDataArr)
-    {
-        return [
-            'equip_score'   => '',
-            'equip_score_hh'   => '',
-            'title'   => '',
-            'gem_xiu_lian_score'   => '',
-            'gem_jin_jie_score'    => '',
-
-        ];
+        return $tempArr;
     }
 
 }

@@ -1,0 +1,568 @@
+<form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Role_public_id')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-role_public_id" data-rule="required" data-source="role/public/index" class="form-control selectpage" name="row[role_public_id]" type="text" value="{$row.role_public_id|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Role_selling_id')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-role_selling_id" data-rule="required" data-source="role/selling/index" class="form-control selectpage" name="row[role_selling_id]" type="text" value="{$row.role_selling_id|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Serial_num')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-serial_num" data-rule="required" class="form-control" name="row[serial_num]" type="text" value="{$row.serial_num|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Name')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-name" data-rule="required" class="form-control" name="row[name]" type="text" value="{$row.name|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Level')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-level" data-rule="required" class="form-control" name="row[level]" type="text" value="{$row.level|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Sex')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-sex" data-rule="required" class="form-control" name="row[sex]" type="number" value="{$row.sex|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Price')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-price" data-rule="required" class="form-control" step="0.01" name="row[price]" type="number" value="{$row.price|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Profession_id')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-profession_id" data-rule="required" data-source="profession/index" class="form-control selectpage" name="row[profession_id]" type="text" value="{$row.profession_id|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Max_hp')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-max_hp" data-rule="required" class="form-control" name="row[max_hp]" type="number" value="{$row.max_hp|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Max_mp')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-max_mp" data-rule="required" class="form-control" name="row[max_mp]" type="number" value="{$row.max_mp|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Str')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-str" data-rule="required" class="form-control" name="row[str]" type="number" value="{$row.str|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Spr')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-spr" data-rule="required" class="form-control" name="row[spr]" type="number" value="{$row.spr|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Con')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-con" data-rule="required" class="form-control" name="row[con]" type="number" value="{$row.con|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Com')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-com" data-rule="required" class="form-control" name="row[com]" type="number" value="{$row.com|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Dex')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-dex" data-rule="required" class="form-control" name="row[dex]" type="number" value="{$row.dex|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Qian_neng')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-qian_neng" data-rule="required" class="form-control" name="row[qian_neng]" type="number" value="{$row.qian_neng|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Phy_attack')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-phy_attack" data-rule="required" class="form-control" name="row[phy_attack]" type="number" value="{$row.phy_attack|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Mag_attack')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-mag_attack" data-rule="required" class="form-control" name="row[mag_attack]" type="number" value="{$row.mag_attack|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Phy_def')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-phy_def" data-rule="required" class="form-control" name="row[phy_def]" type="number" value="{$row.phy_def|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Mag_def')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-mag_def" data-rule="required" class="form-control" name="row[mag_def]" type="number" value="{$row.mag_def|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Hit')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-hit" data-rule="required" class="form-control" name="row[hit]" type="number" value="{$row.hit|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Miss')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-miss" data-rule="required" class="form-control" name="row[miss]" type="number" value="{$row.miss|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Critical_att')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-critical_att" data-rule="required" class="form-control" name="row[critical_att]" type="number" value="{$row.critical_att|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Critical_def')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-critical_def" data-rule="required" class="form-control" name="row[critical_def]" type="number" value="{$row.critical_def|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('All_jiaozi')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-all_jiaozi" data-rule="required" class="form-control" name="row[all_jiaozi]" type="number" value="{$row.all_jiaozi|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('All_gold')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-all_gold" data-rule="required" class="form-control" name="row[all_gold]" type="number" value="{$row.all_gold|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('All_yuanbao')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-all_yuanbao" data-rule="required" class="form-control" name="row[all_yuanbao]" type="number" value="{$row.all_yuanbao|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('All_bind_yuanbao')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-all_bind_yuanbao" data-rule="required" class="form-control" name="row[all_bind_yuanbao]" type="number" value="{$row.all_bind_yuanbao|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('All_tongbao')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-all_tongbao" data-rule="required" class="form-control" name="row[all_tongbao]" type="number" value="{$row.all_tongbao|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Cold_att')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-cold_att" data-rule="required" class="form-control" name="row[cold_att]" type="number" value="{$row.cold_att|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Cold_def')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-cold_def" data-rule="required" class="form-control" name="row[cold_def]" type="number" value="{$row.cold_def|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Resist_cold_def')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-resist_cold_def" data-rule="required" class="form-control" name="row[resist_cold_def]" type="number" value="{$row.resist_cold_def|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Resist_cold_def_limit')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-resist_cold_def_limit" data-rule="required" class="form-control" name="row[resist_cold_def_limit]" type="number" value="{$row.resist_cold_def_limit|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Fire_att')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-fire_att" data-rule="required" class="form-control" name="row[fire_att]" type="number" value="{$row.fire_att|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Fire_def')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-fire_def" data-rule="required" class="form-control" name="row[fire_def]" type="number" value="{$row.fire_def|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Resist_fire_def')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-resist_fire_def" data-rule="required" class="form-control" name="row[resist_fire_def]" type="number" value="{$row.resist_fire_def|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Resist_fire_def_limit')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-resist_fire_def_limit" data-rule="required" class="form-control" name="row[resist_fire_def_limit]" type="number" value="{$row.resist_fire_def_limit|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Light_att')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-light_att" data-rule="required" class="form-control" name="row[light_att]" type="number" value="{$row.light_att|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Light_def')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-light_def" data-rule="required" class="form-control" name="row[light_def]" type="number" value="{$row.light_def|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Resist_light_def')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-resist_light_def" data-rule="required" class="form-control" name="row[resist_light_def]" type="number" value="{$row.resist_light_def|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Resist_light_def_limit')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-resist_light_def_limit" data-rule="required" class="form-control" name="row[resist_light_def_limit]" type="number" value="{$row.resist_light_def_limit|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Postion_att')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-postion_att" data-rule="required" class="form-control" name="row[postion_att]" type="number" value="{$row.postion_att|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Postion_def')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-postion_def" data-rule="required" class="form-control" name="row[postion_def]" type="number" value="{$row.postion_def|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Resist_postion_def')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-resist_postion_def" data-rule="required" class="form-control" name="row[resist_postion_def]" type="number" value="{$row.resist_postion_def|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Resist_postion_def_limit')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-resist_postion_def_limit" data-rule="required" class="form-control" name="row[resist_postion_def_limit]" type="number" value="{$row.resist_postion_def_limit|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Equip_score')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-equip_score" data-rule="required" class="form-control" name="row[equip_score]" type="number" value="{$row.equip_score|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Equip_score_hh')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-equip_score_hh" data-rule="required" class="form-control" name="row[equip_score_hh]" type="number" value="{$row.equip_score_hh|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Title')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-title" data-rule="required" class="form-control" name="row[title]" type="text" value="{$row.title|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Gem_xiu_lian_score')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-gem_xiu_lian_score" data-rule="required" class="form-control" name="row[gem_xiu_lian_score]" type="number" value="{$row.gem_xiu_lian_score|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Gem_jin_jie_score')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-gem_jin_jie_score" data-rule="required" class="form-control" name="row[gem_jin_jie_score]" type="number" value="{$row.gem_jin_jie_score|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Xin_fa_score')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-xin_fa_score" data-rule="required" class="form-control" name="row[xin_fa_score]" type="number" value="{$row.xin_fa_score|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Xiu_lian_score')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-xiu_lian_score" data-rule="required" class="form-control" name="row[xiu_lian_score]" type="number" value="{$row.xiu_lian_score|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Upgrade_score')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-upgrade_score" data-rule="required" class="form-control" name="row[upgrade_score]" type="number" value="{$row.upgrade_score|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Chuan_ci_jian_mian')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-chuan_ci_jian_mian" data-rule="required" class="form-control" name="row[chuan_ci_jian_mian]" type="number" value="{$row.chuan_ci_jian_mian|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Chuan_ci_shang_hai')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-chuan_ci_shang_hai" data-rule="required" class="form-control" name="row[chuan_ci_shang_hai]" type="number" value="{$row.chuan_ci_shang_hai|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Gem_num_3')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-gem_num_3" data-rule="required" class="form-control" name="row[gem_num_3]" type="number" value="{$row.gem_num_3|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Gem_num_4')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-gem_num_4" data-rule="required" class="form-control" name="row[gem_num_4]" type="number" value="{$row.gem_num_4|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Gem_num_5')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-gem_num_5" data-rule="required" class="form-control" name="row[gem_num_5]" type="number" value="{$row.gem_num_5|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Gem_num_6')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-gem_num_6" data-rule="required" class="form-control" name="row[gem_num_6]" type="number" value="{$row.gem_num_6|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Gem_num_7')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-gem_num_7" data-rule="required" class="form-control" name="row[gem_num_7]" type="number" value="{$row.gem_num_7|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Gem_num_8')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-gem_num_8" data-rule="required" class="form-control" name="row[gem_num_8]" type="number" value="{$row.gem_num_8|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Gem_num_9')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-gem_num_9" data-rule="required" class="form-control" name="row[gem_num_9]" type="number" value="{$row.gem_num_9|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Mining')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-mining" data-rule="required" class="form-control" name="row[mining]" type="number" value="{$row.mining|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Plant')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-plant" data-rule="required" class="form-control" name="row[plant]" type="number" value="{$row.plant|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Drug')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-drug" data-rule="required" class="form-control" name="row[drug]" type="number" value="{$row.drug|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Cooking')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-cooking" data-rule="required" class="form-control" name="row[cooking]" type="number" value="{$row.cooking|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Pharmacy')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-pharmacy" data-rule="required" class="form-control" name="row[pharmacy]" type="number" value="{$row.pharmacy|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Fishing')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-fishing" data-rule="required" class="form-control" name="row[fishing]" type="number" value="{$row.fishing|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Item_unbind_info')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-item_unbind_info" data-rule="required" class="form-control " rows="5" name="row[item_unbind_info]" cols="50">{$row.item_unbind_info|htmlentities}</textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Equip_unbind_info')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-equip_unbind_info" data-rule="required" class="form-control " rows="5" name="row[equip_unbind_info]" cols="50">{$row.equip_unbind_info|htmlentities}</textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Pet_appendage_info')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-pet_appendage_info" data-rule="required" class="form-control " rows="5" name="row[pet_appendage_info]" cols="50">{$row.pet_appendage_info|htmlentities}</textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Base_info')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-base_info" data-rule="required" class="form-control " rows="5" name="row[base_info]" cols="50">{$row.base_info|htmlentities}</textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Skill_info')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-skill_info" data-rule="required" class="form-control " rows="5" name="row[skill_info]" cols="50">{$row.skill_info|htmlentities}</textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Book_info')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-book_info" data-rule="required" class="form-control " rows="5" name="row[book_info]" cols="50">{$row.book_info|htmlentities}</textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Pet_info')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-pet_info" data-rule="required" class="form-control " rows="5" name="row[pet_info]" cols="50">{$row.pet_info|htmlentities}</textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Bag_item_info')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-bag_item_info" data-rule="required" class="form-control " rows="5" name="row[bag_item_info]" cols="50">{$row.bag_item_info|htmlentities}</textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Bag_equip_info')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-bag_equip_info" data-rule="required" class="form-control " rows="5" name="row[bag_equip_info]" cols="50">{$row.bag_equip_info|htmlentities}</textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Bag_pet_equip_info')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-bag_pet_equip_info" data-rule="required" class="form-control " rows="5" name="row[bag_pet_equip_info]" cols="50">{$row.bag_pet_equip_info|htmlentities}</textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Bag_infants_info')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-bag_infants_info" data-rule="required" class="form-control " rows="5" name="row[bag_infants_info]" cols="50">{$row.bag_infants_info|htmlentities}</textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Cloth_info')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-cloth_info" data-rule="required" class="form-control " rows="5" name="row[cloth_info]" cols="50">{$row.cloth_info|htmlentities}</textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Wuhun_info')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-wuhun_info" data-rule="required" class="form-control " rows="5" name="row[wuhun_info]" cols="50">{$row.wuhun_info|htmlentities}</textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Xiulian_info')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-xiulian_info" data-rule="required" class="form-control " rows="5" name="row[xiulian_info]" cols="50">{$row.xiulian_info|htmlentities}</textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Zhenyuan_info')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-zhenyuan_info" data-rule="required" class="form-control " rows="5" name="row[zhenyuan_info]" cols="50">{$row.zhenyuan_info|htmlentities}</textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Infants_info')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-infants_info" data-rule="required" class="form-control " rows="5" name="row[infants_info]" cols="50">{$row.infants_info|htmlentities}</textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Shending_info')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-shending_info" data-rule="required" class="form-control " rows="5" name="row[shending_info]" cols="50">{$row.shending_info|htmlentities}</textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Hxy_info')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-hxy_info" data-rule="required" class="form-control " rows="5" name="row[hxy_info]" cols="50">{$row.hxy_info|htmlentities}</textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Fiveelements_info')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-fiveElements_info" data-rule="required" class="form-control " rows="5" name="row[fiveElements_info]" cols="50">{$row.fiveElements_info|htmlentities}</textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Talent_info')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-talent_info" data-rule="required" class="form-control " rows="5" name="row[talent_info]" cols="50">{$row.talent_info|htmlentities}</textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Special_item_info')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-special_item_info" data-rule="required" class="form-control " rows="5" name="row[special_item_info]" cols="50">{$row.special_item_info|htmlentities}</textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Special_pets_info')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-special_pets_info" data-rule="required" class="form-control " rows="5" name="row[special_pets_info]" cols="50">{$row.special_pets_info|htmlentities}</textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Special_equips_info')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-special_equips_info" data-rule="required" class="form-control " rows="5" name="row[special_equips_info]" cols="50">{$row.special_equips_info|htmlentities}</textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Status')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-status" data-rule="required" class="form-control" name="row[status]" type="number" value="{$row.status|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Remaintime')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-remaintime" data-rule="required" class="form-control datetimepicker" data-date-format="YYYY-MM-DD HH:mm:ss" data-use-current="true" name="row[remaintime]" type="text" value="{:$row.remaintime?datetime($row.remaintime):''}">
+        </div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-success btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>
