@@ -13,7 +13,7 @@ use think\Validate;
  */
 class User extends Api
 {
-    protected $noNeedLogin = ['login', 'mobilelogin', 'register', 'resetpwd', 'changeemail', 'changemobile', 'third'];
+    protected $noNeedLogin = ['signIn', 'mobileSignIn', 'signUp', 'resetPwd', 'changeEmail', 'changeMobile', 'third'];
     protected $noNeedRight = '*';
 
     public function _initialize()
@@ -35,7 +35,7 @@ class User extends Api
      * @param string $account  账号
      * @param string $password 密码
      */
-    public function login()
+    public function signIn()
     {
         $account = $this->request->request('account');
         $password = $this->request->request('password');
@@ -57,7 +57,7 @@ class User extends Api
      * @param string $mobile  手机号
      * @param string $captcha 验证码
      */
-    public function mobilelogin()
+    public function mobileSignIn()
     {
         $mobile = $this->request->request('mobile');
         $captcha = $this->request->request('captcha');
@@ -91,14 +91,13 @@ class User extends Api
 
     /**
      * 注册会员
-     *
      * @param string $username 用户名
      * @param string $password 密码
      * @param string $email    邮箱
      * @param string $mobile   手机号
      * @param string $code   验证码
      */
-    public function register()
+    public function signUp()
     {
         $username = $this->request->request('username');
         $password = $this->request->request('password');
@@ -130,7 +129,7 @@ class User extends Api
     /**
      * 注销登录
      */
-    public function logout()
+    public function signOut()
     {
         $this->auth->logout();
         $this->success(__('Logout successful'));
@@ -171,7 +170,7 @@ class User extends Api
      * @param string $email   邮箱
      * @param string $captcha 验证码
      */
-    public function changeemail()
+    public function changeEmail()
     {
         $user = $this->auth->getUser();
         $email = $this->request->post('email');
@@ -205,7 +204,7 @@ class User extends Api
      * @param string $mobile   手机号
      * @param string $captcha 验证码
      */
-    public function changemobile()
+    public function changeMobile()
     {
         $user = $this->auth->getUser();
         $mobile = $this->request->request('mobile');
@@ -271,7 +270,7 @@ class User extends Api
      * @param string $newpassword 新密码
      * @param string $captcha     验证码
      */
-    public function resetpwd()
+    public function resetPwd()
     {
         $type = $this->request->request("type");
         $mobile = $this->request->request("mobile");
