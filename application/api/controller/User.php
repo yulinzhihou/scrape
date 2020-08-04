@@ -13,7 +13,7 @@ use think\Validate;
  */
 class User extends Api
 {
-    protected $noNeedLogin = ['signIn', 'mobileSignIn', 'signUp', 'resetPwd', 'changeEmail', 'changeMobile', 'third'];
+    protected $noNeedLogin = ['signIn', 'mobileSignIn', 'signUp', 'resetPwd', 'changeEmail', 'changeMobile', 'third','signOut'];
     protected $noNeedRight = '*';
 
     public function _initialize()
@@ -131,8 +131,15 @@ class User extends Api
      */
     public function signOut()
     {
-        $this->auth->logout();
-        $this->success(__('Logout successful'));
+        $result = $this->auth->getToken();
+        $params = $this->request->param();
+        if ($result == $params['token']) {
+            //表示token 正确，可以成功退出
+            $this->auth->logout();
+            $this->success(__('Logout successful'));
+        } else {
+           $this->error('非法退出');
+        }
     }
 
     /**

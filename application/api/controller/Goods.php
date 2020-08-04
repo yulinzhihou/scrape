@@ -21,7 +21,7 @@ class Goods extends Api
     // 无需登录的接口,*表示全部
     protected $noNeedLogin = ['test', 'test1'];
     // 无需鉴权的接口,*表示全部
-    protected $noNeedRight = ['publicList','baseInfo','sellingList','roleInfo'];
+    protected $noNeedRight = '*';
 
     protected $rolePublicModel = null;
     protected $roleDetailModel = null;
@@ -114,12 +114,11 @@ class Goods extends Api
 
 
     /**
-     * 公示区商品角色详情
+     * 商品角色详情
      */
     public function roleInfo()
     {
         $user = $this->auth->getUser();
-
         $params = $this->request->param();
         if (isset($params['type']) && $params['type'] = 'pub') {
             //表示是公示区
@@ -131,6 +130,276 @@ class Goods extends Api
             $result['base_data'] = $this->roleDetailModel->where(['serial_num'=>$params['serial_num'],'status'=>1])->field($this->baseDataFields)->find()->toArray();
         }
         $result['base_info'] = json_decode($result['base_info'],true);
+        $result['api_image_url'] = 'http://image.cyg.changyou.com/tl/small/';
+        $result['api_version'] = '20140806';
+        $this->success('请求成功',$result);
+    }
+
+
+    /**
+     * 商品技能页详情
+     */
+    public function skillList()
+    {
+        $user = $this->auth->getUser();
+        $params = $this->request->param();
+        if (isset($params['type']) && $params['type'] = 'pub') {
+            //表示是公示区
+            $result = $this->roleDetailModel->where(['serial_num'=>$params['serial_num'],'status'=>0])->field('skill_info')->find()->toArray();
+        } else  {
+            //表示是交易区
+            $result = $this->roleDetailModel->where(['serial_num'=>$params['serial_num'],'status'=>1])->field('skill_info')->find()->toArray();
+        }
+        $result['skill_info'] = json_decode($result['skill_info'],true);
+        $result['api_image_url'] = 'http://image.cyg.changyou.com/tl/small/';
+        $result['api_version'] = '20140806';
+        $this->success('请求成功',$result);
+    }
+
+    /**
+     * 商品秘籍页详情
+     */
+    public function miJiInfo()
+    {
+        $user = $this->auth->getUser();
+        $params = $this->request->param();
+        if (isset($params['type']) && $params['type'] = 'pub') {
+            //表示是公示区
+            $result = $this->roleDetailModel->where(['serial_num'=>$params['serial_num'],'status'=>0])->field('book_info')->find()->toArray();
+        } else  {
+            //表示是交易区
+            $result = $this->roleDetailModel->where(['serial_num'=>$params['serial_num'],'status'=>1])->field('book_info')->find()->toArray();
+        }
+        $result['book_info'] = json_decode($result['book_info'],true);
+        $result['api_image_url'] = 'http://image.cyg.changyou.com/tl/small/';
+        $result['api_version'] = '20140806';
+        $this->success('请求成功',$result);
+    }
+
+
+    /**
+     * 商品秘籍页详情
+     */
+    public function petsInfo()
+    {
+        $user = $this->auth->getUser();
+        $params = $this->request->param();
+        if (isset($params['type']) && $params['type'] = 'pub') {
+            //表示是公示区
+            $result = $this->roleDetailModel->where(['serial_num'=>$params['serial_num'],'status'=>0])->field('pet_info')->find()->toArray();
+        } else  {
+            //表示是交易区
+            $result = $this->roleDetailModel->where(['serial_num'=>$params['serial_num'],'status'=>1])->field('pet_info')->find()->toArray();
+        }
+        $result['pet_info'] = json_decode($result['pet_info'],true);
+        $result['api_image_url'] = 'http://image.cyg.changyou.com/tl/small/';
+        $result['api_version'] = '20140806';
+        $this->success('请求成功',$result);
+    }
+
+    /**
+     * 商品仓库页详情
+     */
+    public function bankInfo()
+    {
+        $user = $this->auth->getUser();
+        $params = $this->request->param();
+        $fields = ['bag_item_info','bag_equip_info','bag_pet_equip_info','bag_infants_info'];
+        if (isset($params['type']) && $params['type'] = 'pub') {
+            //表示是公示区
+            $result = $this->roleDetailModel->where(['serial_num'=>$params['serial_num'],'status'=>0])->field($fields)->find()->toArray();
+        } else  {
+            //表示是交易区
+            $result = $this->roleDetailModel->where(['serial_num'=>$params['serial_num'],'status'=>1])->field($fields)->find()->toArray();
+        }
+        $result['bag_item_info'] = json_decode($result['bag_item_info'],true);
+        $result['bag_equip_info'] = json_decode($result['bag_equip_info'],true);
+        $result['bag_pet_equip_info'] = json_decode($result['bag_pet_equip_info'],true);
+        $result['bag_infants_info'] = json_decode($result['bag_infants_info'],true);
+        $result['api_image_url'] = 'http://image.cyg.changyou.com/tl/small/';
+        $result['api_version'] = '20140806';
+        $this->success('请求成功',$result);
+    }
+
+    /**
+     * 商品外观页详情
+     */
+    public function appearanceInfo()
+    {
+        $user = $this->auth->getUser();
+        $params = $this->request->param();
+        if (isset($params['type']) && $params['type'] = 'pub') {
+            //表示是公示区
+            $result = $this->roleDetailModel->where(['serial_num'=>$params['serial_num'],'status'=>0])->field('cloth_info')->find()->toArray();
+        } else  {
+            //表示是交易区
+            $result = $this->roleDetailModel->where(['serial_num'=>$params['serial_num'],'status'=>1])->field('cloth_info')->find()->toArray();
+        }
+        $result['cloth_info'] = json_decode($result['cloth_info'],true);
+        $result['api_image_url'] = 'http://image.cyg.changyou.com/tl/small/';
+        $result['api_version'] = '20140806';
+        $this->success('请求成功',$result);
+    }
+
+    /**
+     * 商品武魂页详情
+     */
+    public function wuhunInfo()
+    {
+        $user = $this->auth->getUser();
+        $params = $this->request->param();
+        if (isset($params['type']) && $params['type'] = 'pub') {
+            //表示是公示区
+            $result = $this->roleDetailModel->where(['serial_num'=>$params['serial_num'],'status'=>0])->field('wuhun_info')->find()->toArray();
+        } else  {
+            //表示是交易区
+            $result = $this->roleDetailModel->where(['serial_num'=>$params['serial_num'],'status'=>1])->field('wuhun_info')->find()->toArray();
+        }
+        $result['wuhun_info'] = json_decode($result['wuhun_info'],true);
+        $result['api_image_url'] = 'http://image.cyg.changyou.com/tl/small/';
+        $result['api_version'] = '20140806';
+        $this->success('请求成功',$result);
+    }
+
+    /**
+     * 商品经脉修炼页详情
+     */
+    public function jingmaiInfo()
+    {
+        $user = $this->auth->getUser();
+        $params = $this->request->param();
+        if (isset($params['type']) && $params['type'] = 'pub') {
+            //表示是公示区
+            $result = $this->roleDetailModel->where(['serial_num'=>$params['serial_num'],'status'=>0])->field('xiulian_info')->find()->toArray();
+        } else  {
+            //表示是交易区
+            $result = $this->roleDetailModel->where(['serial_num'=>$params['serial_num'],'status'=>1])->field('xiulian_info')->find()->toArray();
+        }
+        $result['xiulian_info'] = json_decode($result['xiulian_info'],true);
+        $result['api_image_url'] = 'http://image.cyg.changyou.com/tl/small/';
+        $result['api_version'] = '20140806';
+        $this->success('请求成功',$result);
+    }
+
+
+    /**
+     * 商品真元页详情
+     */
+    public function zhenyuanInfo()
+    {
+        $user = $this->auth->getUser();
+        $params = $this->request->param();
+        if (isset($params['type']) && $params['type'] = 'pub') {
+            //表示是公示区
+            $result = $this->roleDetailModel->where(['serial_num'=>$params['serial_num'],'status'=>0])->field('zhenyuan_info')->find()->toArray();
+        } else  {
+            //表示是交易区
+            $result = $this->roleDetailModel->where(['serial_num'=>$params['serial_num'],'status'=>1])->field('zhenyuan_info')->find()->toArray();
+        }
+        $result['zhenyuan_info'] = json_decode($result['zhenyuan_info'],true);
+        $result['api_image_url'] = 'http://image.cyg.changyou.com/tl/small/';
+        $result['api_version'] = '20140806';
+        $this->success('请求成功',$result);
+    }
+
+
+    /**
+     * 商品子女页详情
+     */
+    public function infantsInfo()
+    {
+        $user = $this->auth->getUser();
+        $params = $this->request->param();
+        if (isset($params['type']) && $params['type'] = 'pub') {
+            //表示是公示区
+            $result = $this->roleDetailModel->where(['serial_num'=>$params['serial_num'],'status'=>0])->field('infants_info')->find()->toArray();
+        } else  {
+            //表示是交易区
+            $result = $this->roleDetailModel->where(['serial_num'=>$params['serial_num'],'status'=>1])->field('infants_info')->find()->toArray();
+        }
+        $result['infants_info'] = json_decode($result['infants_info'],true);
+        $result['api_image_url'] = 'http://image.cyg.changyou.com/tl/small/';
+        $result['api_version'] = '20140806';
+        $this->success('请求成功',$result);
+    }
+
+
+    /**
+     * 商品神鼎页详情
+     */
+    public function shengdingInfo()
+    {
+        $user = $this->auth->getUser();
+        $params = $this->request->param();
+        if (isset($params['type']) && $params['type'] = 'pub') {
+            //表示是公示区
+            $result = $this->roleDetailModel->where(['serial_num'=>$params['serial_num'],'status'=>0])->field('shending_info')->find()->toArray();
+        } else  {
+            //表示是交易区
+            $result = $this->roleDetailModel->where(['serial_num'=>$params['serial_num'],'status'=>1])->field('shending_info')->find()->toArray();
+        }
+        $result['shending_info'] = json_decode($result['shending_info'],true);
+        $result['api_image_url'] = 'http://image.cyg.changyou.com/tl/small/';
+        $result['api_version'] = '20140806';
+        $this->success('请求成功',$result);
+    }
+
+    /**
+     * 商品豪侠印页详情
+     */
+    public function hxyInfo()
+    {
+        $user = $this->auth->getUser();
+        $params = $this->request->param();
+        if (isset($params['type']) && $params['type'] = 'pub') {
+            //表示是公示区
+            $result = $this->roleDetailModel->where(['serial_num'=>$params['serial_num'],'status'=>0])->field('hxy_info')->find()->toArray();
+        } else  {
+            //表示是交易区
+            $result = $this->roleDetailModel->where(['serial_num'=>$params['serial_num'],'status'=>1])->field('hxy_info')->find()->toArray();
+        }
+        $result['hxy_info'] = json_decode($result['hxy_info'],true);
+        $result['api_image_url'] = 'http://image.cyg.changyou.com/tl/small/';
+        $result['api_version'] = '20140806';
+        $this->success('请求成功',$result);
+    }
+
+
+    /**
+     * 商品五行宝鉴页详情
+     */
+    public function fiveElementsInfo()
+    {
+        $user = $this->auth->getUser();
+        $params = $this->request->param();
+        if (isset($params['type']) && $params['type'] = 'pub') {
+            //表示是公示区
+            $result = $this->roleDetailModel->where(['serial_num'=>$params['serial_num'],'status'=>0])->field('fiveElements_info')->find()->toArray();
+        } else  {
+            //表示是交易区
+            $result = $this->roleDetailModel->where(['serial_num'=>$params['serial_num'],'status'=>1])->field('fiveElements_info')->find()->toArray();
+        }
+        $result['fiveElements_info'] = json_decode($result['fiveElements_info'],true);
+        $result['api_image_url'] = 'http://image.cyg.changyou.com/tl/small/';
+        $result['api_version'] = '20140806';
+        $this->success('请求成功',$result);
+    }
+
+    /**
+     * 商品武意页详情
+     */
+    public function wuyiInfo()
+    {
+        $user = $this->auth->getUser();
+        $params = $this->request->param();
+        if (isset($params['type']) && $params['type'] = 'pub') {
+            //表示是公示区
+            $result = $this->roleDetailModel->where(['serial_num'=>$params['serial_num'],'status'=>0])->field('talent_info')->find()->toArray();
+        } else  {
+            //表示是交易区
+            $result = $this->roleDetailModel->where(['serial_num'=>$params['serial_num'],'status'=>1])->field('talent_info')->find()->toArray();
+        }
+        $result['talent_info'] = json_decode($result['talent_info'],true);
         $result['api_image_url'] = 'http://image.cyg.changyou.com/tl/small/';
         $result['api_version'] = '20140806';
         $this->success('请求成功',$result);
