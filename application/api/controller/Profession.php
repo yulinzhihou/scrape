@@ -17,7 +17,7 @@ class Profession extends Api
     // 无需登录的接口,*表示全部
     protected $noNeedLogin = ['getList'];
     // 无需鉴权的接口,*表示全部
-    protected $noNeedRight = ['getList'];
+    protected $noNeedRight = [''];
 
     protected $model = null;
 
@@ -48,9 +48,10 @@ class Profession extends Api
      */
     public function getList()
     {
+        $user = $this->auth->getUser();
         //验证接口token 是否有效
         $result = $this->model->column('name','key');
-        $this->success('返回成功', $result);
+        $this->success('请求成功', $result);
     }
 
 }

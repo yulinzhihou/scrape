@@ -4,6 +4,7 @@ namespace app\api\controller;
 
 use app\common\controller\Api;
 use app\common\model\RolePublic as RolePublicModel;
+use app\common\model\RoleDetail as RoleDetailModel;
 
 /**
  * 示例接口
@@ -18,14 +19,16 @@ class Goods extends Api
     // 无需登录的接口,*表示全部
     protected $noNeedLogin = ['test', 'test1'];
     // 无需鉴权的接口,*表示全部
-    protected $noNeedRight = ['publicList'];
+    protected $noNeedRight = ['publicList','baseInfo'];
 
     protected $rolePublicModel = null;
+    protected $roleDetailModel = null;
 
     public function _initialize()
     {
         parent::_initialize();
         $this->rolePublicModel = new RolePublicModel();
+        $this->roleDetailModel = new RoleDetailModel();
     }
 
     /**
@@ -54,34 +57,26 @@ class Goods extends Api
         $params = $this->request->param();
 //        dump($params);die;
         $result = $this->rolePublicModel->limit($params['page_num'])->page($params['page'])->select();
-        $this->success('返回成功', $result);
+        $this->success('请求成功', $result);
     }
 
-    /**
-     * 无需登录的接口
-     *
-     */
-    public function test1()
+    public function baseInfo()
     {
-        $this->success('返回成功', ['action' => 'test1']);
-    }
-
-    /**
-     * 需要登录的接口
-     *
-     */
-    public function test2()
-    {
-        $this->success('返回成功', ['action' => 'test2']);
-    }
-
-    /**
-     * 需要登录且需要验证有相应组的权限
-     *
-     */
-    public function test3()
-    {
-        $this->success('返回成功', ['action' => 'test3']);
+        $user = $this->auth->getUser();
+        $params = $this->request->param();
+        $fields = ['id', 'role_public_id','role_selling_id','serial_num','name','level','sex','price','profession_id','max_hp','max_mp','str','spr','con','com',
+                    'dex','qian_neng','phy_attack','mag_attack','phy_def','mag_def','hit','miss','critical_att','critical_def','all_jiaozi','all_gold','all_yuanbao',
+                    'all_bind_yuanbao','all_tongbao','cold_att','cold_def','resist_cold_def','resist_cold_def_limit','fire_att','fire_def','resist_fire_def','resist_fire_def_limit',
+                    'light_att','light_def','resist_light_def','resist_light_def_limit','postion_att','postion_def','resist_postion_def','resist_postion_def_limit','xin_fa_score',
+                    'xiu_lian_score','upgrade_score','chuan_ci_jian_mian','chuan_ci_shang_hai','gem_num_3','gem_num_4','gem_num_5','gem_num_6','gem_num_7','gem_num_8','gem_num_9',
+                    'mining','plant','drug','cooking','pharmacy','fishing','status','remaintime','createtime','updatetime','deletetime',
+        ];
+        $result1 = $this->roleDetailModel->where('serial_num',$params['serial_num'])->field('special_item_info')->find()->toArray();
+        $result1['base_data'] = $this->roleDetailModel->where('serial_num',$params['serial_num'])->field($fields)->find();
+        $result1['api_image_url'] = 'http://image.cyg.changyou.com/tl/small/';
+        $result1['api_version'] = '20140806';
+        $result1['special_item_info'] = json_decode($result1['special_item_info'],true);
+        $this->success('请求成功',$result1);
     }
 
 }
