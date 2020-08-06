@@ -49,8 +49,29 @@ class Profession extends Api
     public function getList()
     {
         $user = $this->auth->getUser();
+        $headImg = 'http://public.cyg.changyou.com/tl/themes/img/cartoon/';
         //验证接口token 是否有效
-        $result = $this->model->column('name','key');
+        $result = $this->model->column('name,key','id');
+        foreach ($result as $key => &$value) {
+            if ($value['key'] == 0 || $value['key'] == 6) {
+                $value['head_img'] = $headImg.'pro1.jpg';
+            } elseif ($value['key'] == 4 || $value['key'] == 7) {
+                $value['head_img'] = $headImg.'pro2.jpg';
+            } elseif ($value['key'] == 2 || $value['key'] == 3) {
+                $value['head_img'] = $headImg.'pro3.jpg';
+            } elseif ($value['key'] == 1 || $value['key'] == 8) {
+                $value['head_img'] = $headImg.'pro4.jpg';
+            } elseif ($value['key'] == 10 || $value['key'] == 5) {
+                $value['head_img'] = $headImg.'pro5.jpg';
+            } elseif ($value['key'] == 11) {
+                $value['head_img'] = $headImg.'pro6.jpg';
+            } elseif ($value['key'] == 12 ) {
+                $value['head_img'] = $headImg.'pro12.jpg';
+            } elseif ($value['key'] == 13 ) {
+                $value['head_img'] = $headImg.'pro13.jpg';
+            }
+        }
+
         $this->success('请求成功', $result);
     }
 
